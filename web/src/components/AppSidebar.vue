@@ -148,17 +148,17 @@ watch(
               <CollapsibleContent>
                 <SidebarMenuSub class="ml-4 border-l-2 border-primary/10 pl-4 mt-2 space-y-1">
                   <SidebarMenuSubItem v-for="childItem in item.items" :key="childItem.title">
-                    <RouterLink :to="childItem.url" v-slot="{ isActive }">
+                    <RouterLink :to="childItem.url">
                       <SidebarMenuSubButton
-                        :is-active="isActive"
-                        class="group h-9 rounded-lg *:hover:bg-sidebar-accent data-[active=true]:bg-sidebar-accent/50"
+                        :is-active="isChildActive(childItem.url)"
+                        class="h-9 rounded-lg"
                       >
                         <span
                           :class="[
                             'text-sm transition-all',
-                            isActive
-                              ? 'font-semibold text-foreground'
-                              : 'text-muted-foreground group-hover:text-foreground',
+                            isChildActive(childItem.url)
+                              ? 'font-semibold'
+                              : 'font-medium opacity-70',
                           ]"
                         >
                           {{ childItem.title }}
