@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, onMounted, computed } from 'vue'
+import { reactive, onMounted, computed, watch, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCashTransactionStore } from '@/stores/cashTransaction.store'
 import { useCoaStore } from '@/stores/coa.store'
@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Field, FieldContent, FieldLabel, FieldError } from '@/components/ui/field'
 import { AmountInput } from '@/components/common/form/input/amount'
 import { Toggle } from '@/components/common/form'
+import { CancelModal } from '@/components/common/cancel'
 
 const props = defineProps<{
   initialData?: CashTransaction | null
@@ -42,10 +43,24 @@ const form = reactive<CreateCashTransactionRequest>({
   date: new Date().toISOString().split('T')[0] || '',
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+const isDirty = computed(() => JSON.stringify(form) !== initialForm.value)
+
 const typeOptions = [
   { label: 'Cash In', value: 'in' },
   { label: 'Cash Out', value: 'out' },
 ]
+
+watch(
+  () => form.coaId,
+  (newCoaId) => {
+    const selectedCoa = coaStore.coas.find((coa) => coa.id === newCoaId)
+    if (selectedCoa) {
+      form.type = selectedCoa.type as 'in' | 'out'
+    }
+  },
+)
 
 onMounted(async () => {
   await coaStore.ensureDataLoaded()
@@ -54,9 +69,22 @@ onMounted(async () => {
     form.type = props.initialData.type
     form.amount = props.initialData.amount
     form.description = props.initialData.description
-    form.date = props.initialData.date.split('T')[0] || ''
+    form.date = props.initialData.date.substring(0, 10) || ''
   }
+  initialForm.value = JSON.stringify(form)
 })
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    router.back()
+  }
+}
+
+function confirmCancel() {
+  router.back()
+}
 
 async function handleSubmit() {
   clearErrors()
@@ -67,7 +95,10 @@ async function handleSubmit() {
     }
 
     if (isEdit.value && props.initialData) {
-      await cashTransactionStore.update(props.initialData.id, payload as UpdateCashTransactionRequest)
+      await cashTransactionStore.update(
+        props.initialData.id,
+        payload as UpdateCashTransactionRequest,
+      )
       toast.success('Cash transaction updated successfully')
     } else {
       await cashTransactionStore.create(payload)
@@ -126,7 +157,7 @@ async function handleSubmit() {
           <Field>
             <FieldLabel>Type</FieldLabel>
             <FieldContent>
-              <Toggle v-model="form.type" :options="typeOptions" />
+              <Toggle v-model="form.type" :options="typeOptions" disabled />
               <FieldError v-if="hasError('Type')" :errors="[getErrorMessage('Type')]" />
             </FieldContent>
           </Field>
@@ -148,12 +179,15 @@ async function handleSubmit() {
                 required
                 :aria-invalid="hasError('Description')"
               />
-              <FieldError v-if="hasError('Description')" :errors="[getErrorMessage('Description')]" />
+              <FieldError
+                v-if="hasError('Description')"
+                :errors="[getErrorMessage('Description')]"
+              />
             </FieldContent>
           </Field>
 
           <div class="flex items-center justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" @click="router.back()"> Cancel </Button>
+            <Button type="button" variant="outline" @click="handleCancel"> Cancel </Button>
             <Button type="submit" :disabled="cashTransactionStore.loading">
               {{ cashTransactionStore.loading ? 'Saving...' : 'Save' }}
             </Button>
@@ -161,5 +195,6 @@ async function handleSubmit() {
         </form>
       </CardContent>
     </Card>
+    <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
   </div>
 </template>

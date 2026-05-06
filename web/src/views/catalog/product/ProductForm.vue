@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, watch, onMounted } from 'vue'
+import { reactive, watch, onMounted, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { useCategoryStore } from '@/stores/category.stores'
 import { useModifierStore } from '@/stores/modifier.store'
 import { useFormErrors } from '@/composables/common/useFormErrors'
+import { CancelModal } from '@/components/common/cancel'
 import type { Product, StoreProductRequest } from '@/types/product.types'
 
 const props = defineProps<{
@@ -43,6 +44,10 @@ const form = reactive<{
   modifierGroupIds: [],
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+const isDirty = computed(() => JSON.stringify(form) !== initialForm.value)
+
 watch(
   () => props.initialData,
   (newData) => {
@@ -61,6 +66,7 @@ watch(
       form.categoryId = ''
       form.modifierGroupIds = []
     }
+    initialForm.value = JSON.stringify(form)
   },
   { immediate: true },
 )
@@ -71,6 +77,18 @@ onMounted(async () => {
     modifierStore.modifiers.length === 0 ? modifierStore.fetchAll() : Promise.resolve(),
   ])
 })
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    router.back()
+  }
+}
+
+function confirmCancel() {
+  router.back()
+}
 
 function handleModifierToggle(id: string, checked: boolean) {
   if (checked) {
@@ -258,12 +276,13 @@ defineExpose({
 
     <!-- Actions -->
     <div class="flex items-center justify-end gap-3 border-t pt-6">
-      <Button variant="ghost" type="button" :disabled="loading" @click="router.back()">
+      <Button variant="ghost" type="button" :disabled="loading" @click="handleCancel">
         Cancel
       </Button>
       <Button type="submit" :disabled="loading" class="min-w-[140px]">
         {{ loading ? 'Saving...' : 'Save Product' }}
       </Button>
     </div>
+    <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
   </form>
 </template>

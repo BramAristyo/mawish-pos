@@ -51,6 +51,21 @@ export const NAVIGATION_CONFIG = [
     ],
   },
   {
+    title: 'Accounting',
+    url: '#',
+    icon: Wallet,
+    items: [
+      {
+        title: 'Chart of Accounts',
+        url: '/coa',
+      },
+      {
+        title: 'Input Ledger',
+        url: '/accounting/cash-transactions',
+      },
+    ],
+  },
+  {
     title: 'People',
     url: '#',
     icon: Users,
@@ -70,21 +85,6 @@ export const NAVIGATION_CONFIG = [
       {
         title: 'Payroll',
         url: '/payroll',
-      },
-    ],
-  },
-  {
-    title: 'Accounting',
-    url: '#',
-    icon: Wallet,
-    items: [
-      {
-        title: 'Chart of Accounts',
-        url: '/coa',
-      },
-      {
-        title: 'Cash Transaction',
-        url: '/accounting/cash-transactions',
       },
     ],
   },

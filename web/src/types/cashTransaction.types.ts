@@ -2,7 +2,7 @@ export type CashTransactionType = 'in' | 'out'
 
 export interface CashTransaction {
   id: string
-  coaId: string
+  coaName: string
   type: CashTransactionType
   amount: number
   description: string

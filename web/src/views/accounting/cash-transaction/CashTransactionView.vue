@@ -113,27 +113,33 @@ function handleDelete(transaction: CashTransaction) {
     />
 
     <div v-else class="space-y-4">
-      <div class="rounded-md border overflow-x-auto">
+      <div class="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Description</TableHead>
-              <TableHead>COA</TableHead>
+              <TableHead>Category</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead class="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="transaction in cashTransactionStore.transactions" :key="transaction.id">
+            <TableRow
+              v-for="transaction in cashTransactionStore.transactions"
+              :key="transaction.id"
+            >
               <TableCell>{{ formatDate(transaction.date) }}</TableCell>
-              <TableCell class="font-medium max-w-[300px] truncate">
+              <TableCell class="font-medium max-w-75 truncate">
                 {{ transaction.description }}
               </TableCell>
-              <TableCell>{{ getCoaName(transaction.coaId) }}</TableCell>
+              <TableCell>{{ transaction.coaName }}</TableCell>
               <TableCell>
-                <Badge :variant="transaction.type === 'in' ? 'success' : 'destructive'" class="capitalize">
+                <Badge
+                  :variant="transaction.type === 'in' ? 'success' : 'destructive'"
+                  class="capitalize"
+                >
                   {{ transaction.type }}
                 </Badge>
               </TableCell>

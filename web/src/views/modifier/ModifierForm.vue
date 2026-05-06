@@ -52,6 +52,10 @@ const form = reactive({
   selectedProductIds: [] as string[],
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+const isDirty = computed(() => JSON.stringify(form) !== initialForm.value)
+
 watch(
   () => props.initialData,
   (newData) => {
@@ -72,12 +76,24 @@ watch(
       form.options = [{ name: '', priceAdjustment: '0', cogsAdjustment: '0' }]
       form.selectedProductIds = []
     }
+    initialForm.value = JSON.stringify(form)
   },
   { immediate: true },
 )
 
 const isProductModalOpen = ref(false)
-const isCancelModalOpen = ref(false)
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    router.back()
+  }
+}
+
+function confirmCancel() {
+  router.back()
+}
 
 const selectedProducts = computed(() => {
   return productStore.products.filter((p) => form.selectedProductIds.includes(p.id))
@@ -117,6 +133,7 @@ function reset() {
     form.options = [{ name: '', priceAdjustment: '0', cogsAdjustment: '0' }]
     form.selectedProductIds = []
   }
+  initialForm.value = JSON.stringify(form)
 }
 
 defineExpose({ reset, setErrors, clearErrors })
@@ -166,7 +183,7 @@ onMounted(async () => {
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold">{{ initialData ? 'Edit' : 'Create' }} Modifier Group</h2>
       <div class="flex gap-2">
-        <Button variant="outline" @click="isCancelModalOpen = true">
+        <Button variant="outline" @click="handleCancel">
           <X class="size-4 mr-2" />
           Cancel
         </Button>
@@ -340,6 +357,6 @@ onMounted(async () => {
       @select="handleProductSelect"
     />
 
-    <CancelModal v-model:open="isCancelModalOpen" @confirm="router.back()" />
+    <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
   </div>
 </template>

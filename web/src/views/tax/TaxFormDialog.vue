@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { useTaxStore } from '@/stores/tax.stores'
 import type { Tax, CreateTaxRequest, UpdateTaxRequest } from '@/types/tax.types'
 import type { ValidationError } from '@/types/common.types'
@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldContent, FieldLabel, FieldError } from '@/components/ui/field'
+import { CancelModal } from '@/components/common/cancel'
 import { toast } from 'vue-sonner'
 import { useFormErrors } from '@/composables/common/useFormErrors'
 
@@ -44,17 +45,50 @@ const form = reactive<CreateTaxRequest>({
   percentage: '',
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+
+const isDirty = computed(() => {
+  return JSON.stringify(form) !== initialForm.value
+})
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    isOpen.value = false
+  }
+}
+
+function confirmCancel() {
+  isOpen.value = false
+}
+
+function resetForm() {
+  clearErrors()
+  if (props.tax) {
+    form.name = props.tax.name
+    form.percentage = props.tax.percentage
+  } else {
+    form.name = ''
+    form.percentage = ''
+  }
+  initialForm.value = JSON.stringify(form)
+}
+
+watch(
+  () => props.open,
+  (open) => {
+    if (open) {
+      resetForm()
+    }
+  },
+)
+
 watch(
   () => props.tax,
-  (newTax) => {
-    clearErrors()
-    if (newTax) {
-      form.name = newTax.name
-      form.percentage = newTax.percentage
-    } else {
-      form.name = ''
-      form.percentage = ''
-    }
+  () => {
+    resetForm()
   },
   { immediate: true },
 )
@@ -83,7 +117,11 @@ async function handleSubmit() {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="sm:max-w-106.25">
+    <DialogContent 
+      class="sm:max-w-106.25"
+      @pointer-down-outside="(e) => isDirty && e.preventDefault()"
+      @escape-key-down="(e) => isDirty && e.preventDefault()"
+    >
       <form @submit.prevent="handleSubmit">
         <DialogHeader>
           <DialogTitle>{{ isEdit ? 'Edit Tax' : 'Add Tax' }}</DialogTitle>
@@ -127,12 +165,13 @@ async function handleSubmit() {
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
+          <Button type="button" variant="outline" @click="handleCancel"> Cancel </Button>
           <Button type="submit" :disabled="taxStore.loading">
             {{ taxStore.loading ? 'Saving...' : 'Save' }}
           </Button>
         </DialogFooter>
       </form>
+      <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
     </DialogContent>
   </Dialog>
 </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { useSalesType } from '@/composables/useSalesType'
 import type {
   SalesType,
@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input'
 import { AmountInput } from '@/components/common/form/input/amount'
 import { Toggle } from '@/components/common/form'
 import { Field, FieldContent, FieldLabel, FieldError } from '@/components/ui/field'
+import { CancelModal } from '@/components/common/cancel'
 import { Plus, Trash2 } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 import { useFormErrors } from '@/composables/common/useFormErrors'
@@ -49,26 +50,50 @@ const form = reactive<CreateSalesTypeRequest>({
   charges: [],
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+
+const isDirty = computed(() => {
+  return JSON.stringify(form) !== initialForm.value
+})
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    isOpen.value = false
+  }
+}
+
+function confirmCancel() {
+  isOpen.value = false
+}
+
+async function resetForm() {
+  clearErrors()
+  if (props.salesType) {
+    await fetchById(props.salesType.id)
+    if (salesTypeDetail.value) {
+      form.name = salesTypeDetail.value.name
+      form.charges = salesTypeDetail.value.charges.map((c) => ({
+        id: c.id,
+        name: c.name,
+        type: c.type,
+        amount: c.amount,
+      }))
+    }
+  } else {
+    form.name = ''
+    form.charges = []
+  }
+  initialForm.value = JSON.stringify(form)
+}
+
 watch(
   () => props.open,
   async (open) => {
     if (open) {
-      clearErrors()
-      if (props.salesType) {
-        await fetchById(props.salesType.id)
-        if (salesTypeDetail.value) {
-          form.name = salesTypeDetail.value.name
-          form.charges = salesTypeDetail.value.charges.map((c) => ({
-            id: c.id,
-            name: c.name,
-            type: c.type,
-            amount: c.amount,
-          }))
-        }
-      } else {
-        form.name = ''
-        form.charges = []
-      }
+      await resetForm()
     }
   },
 )
@@ -109,7 +134,11 @@ async function handleSubmit() {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="sm:max-w-150 max-h-[90vh] overflow-y-auto">
+    <DialogContent 
+      class="sm:max-w-150 max-h-[90vh] overflow-y-auto"
+      @pointer-down-outside="(e) => isDirty && e.preventDefault()"
+      @escape-key-down="(e) => isDirty && e.preventDefault()"
+    >
       <form @submit.prevent="handleSubmit">
         <DialogHeader>
           <DialogTitle>{{ isEdit ? 'Edit Sales Type' : 'Add Sales Type' }}</DialogTitle>
@@ -211,12 +240,13 @@ async function handleSubmit() {
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
+          <Button type="button" variant="outline" @click="handleCancel"> Cancel </Button>
           <Button type="submit" :disabled="loading">
             {{ loading ? 'Saving...' : 'Save' }}
           </Button>
         </DialogFooter>
       </form>
+      <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
     </DialogContent>
   </Dialog>
 </template>
