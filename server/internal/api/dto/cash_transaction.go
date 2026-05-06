@@ -11,6 +11,7 @@ import (
 
 type CashTransactionResponse struct {
 	ID          uuid.UUID       `json:"id"`
+	COAID       uuid.UUID       `json:"coaId"`
 	CoaName     string          `json:"coaName"`
 	Type        domain.CashType `json:"type"`
 	Amount      decimal.Decimal `json:"amount"`
@@ -26,7 +27,7 @@ type CashTransactionResponsePagination struct {
 
 type CashTransactionRequest struct {
 	CoaID       uuid.UUID       `json:"coaId" binding:"required,uuid"`
-	ShiftID     *uuid.UUID      `json:"shiftId" binding:"uuid"`
+	ShiftID     *uuid.UUID      `json:"shiftId"`
 	Type        domain.CashType `json:"type" binding:"required"`
 	Amount      decimal.Decimal `json:"amount" binding:"required,min=0"`
 	Description *string         `json:"description"`
@@ -52,6 +53,7 @@ func ToCashTransactionResponse(ct *domain.CashTransaction) CashTransactionRespon
 	return CashTransactionResponse{
 		ID:          ct.ID,
 		CoaName:     ct.COA.Name,
+		COAID:       ct.COA.ID,
 		Type:        ct.Type,
 		Amount:      ct.Amount,
 		Description: ct.Description,
