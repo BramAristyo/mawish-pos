@@ -34,7 +34,7 @@ import { Input } from '@/components/ui/input'
 import { CommonPagination } from '@/components/common/pagination'
 import { SMALL_SIZE } from '@/constant/pagination.constant'
 import { CommonEmpty } from '@/components/common/empty'
-import { Skeleton } from '@/components/ui/skeleton'
+import { TableSkeleton } from '@/components/common/skeleton'
 import { toast } from 'vue-sonner'
 import type { Product } from '@/types/product.types'
 
@@ -112,11 +112,7 @@ async function handleDelete() {
       </div>
     </div>
 
-    <div v-if="productStore.loading && productStore.products.length === 0" class="space-y-3">
-      <Skeleton class="h-10 w-full" />
-      <Skeleton class="h-10 w-full" />
-      <Skeleton class="h-10 w-full" />
-    </div>
+    <TableSkeleton v-if="productStore.loading && productStore.products.length === 0" :column-count="6" />
 
     <CommonEmpty
       v-else-if="productStore.products.length === 0"

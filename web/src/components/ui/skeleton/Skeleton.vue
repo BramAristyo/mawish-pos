@@ -12,6 +12,16 @@ const props = defineProps<SkeletonProps>()
 <template>
   <div
     data-slot="skeleton"
-    :class="cn('animate-pulse rounded-md bg-primary/10', props.class)"
-  />
+    :class="cn('relative overflow-hidden rounded-md bg-muted/60', props.class)"
+  >
+    <div class="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+  </div>
 </template>
+
+<style scoped>
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+</style>

@@ -29,7 +29,7 @@ import { CommonPagination } from '@/components/common/pagination'
 import { SMALL_SIZE } from '@/constant/pagination.constant'
 import { CommonEmpty } from '@/components/common/empty'
 import { Badge } from '@/components/ui/badge'
-import { Skeleton } from '@/components/ui/skeleton'
+import { TableSkeleton } from '@/components/common/skeleton'
 
 const coaStore = useCoaStore()
 const { formatDate } = useFormatter()
@@ -95,14 +95,10 @@ function handleDelete(coa: Coa) {
       </div>
     </div>
 
-    <div
+    <TableSkeleton
       v-if="coaStore.loading && (!coaStore.coas || coaStore.coas.length === 0)"
-      class="space-y-3"
-    >
-      <Skeleton class="h-10 w-full" />
-      <Skeleton class="h-10 w-full" />
-      <Skeleton class="h-10 w-full" />
-    </div>
+      :column-count="4"
+    />
 
     <CommonEmpty
       v-else-if="!coaStore.coas || coaStore.coas.length === 0"

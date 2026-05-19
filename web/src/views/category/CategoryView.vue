@@ -94,7 +94,7 @@ function handleDelete(category: Category) {
       </div>
     </div>
 
-    <TableSkeleton v-if="true && categoryStore.categories.length === 0" :column-count="4" />
+    <TableSkeleton v-if="categoryStore.loading && categoryStore.categories.length === 0" :column-count="4" />
 
     <CommonEmpty
       v-else-if="categoryStore.categories.length === 0"
