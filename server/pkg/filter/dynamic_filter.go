@@ -3,7 +3,7 @@ package filter
 import (
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 )
 
 type FilterOperator string

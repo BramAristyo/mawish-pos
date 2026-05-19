@@ -2,7 +2,8 @@ package seeder
 
 import (
 	"time"
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -14,7 +15,7 @@ func SeedShiftData(db *gorm.DB) {
 	openAt1 := time.Date(2024, 1, 1, 8, 0, 0, 0, time.Local)
 	closeAt1 := time.Date(2024, 1, 1, 16, 0, 0, 0, time.Local)
 	openAt2 := time.Date(2024, 1, 1, 16, 0, 0, 0, time.Local)
-	
+
 	notes := "Shift Pagi"
 	cash1 := decimal.NewFromInt(1500000)
 

@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/dto"
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/internal/repository"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/helper"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/dto"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/repository"
+	"github.com/BramAristyo/mawish-pos/server/pkg/helper"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )

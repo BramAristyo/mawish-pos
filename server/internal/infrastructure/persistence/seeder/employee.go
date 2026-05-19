@@ -1,7 +1,7 @@
 package seeder
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"

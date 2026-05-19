@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/dto"
-	"github.com/BramAristyo/saas-pos-core/server/internal/repository"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/dto"
+	"github.com/BramAristyo/mawish-pos/server/internal/repository"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
 )
 
 type DashboardUseCase struct {

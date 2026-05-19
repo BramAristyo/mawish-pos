@@ -1,11 +1,11 @@
 package handler
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/dto"
-	"github.com/BramAristyo/saas-pos-core/server/internal/usecase"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/helper"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/response"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/dto"
+	"github.com/BramAristyo/mawish-pos/server/internal/usecase"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/pkg/helper"
+	"github.com/BramAristyo/mawish-pos/server/pkg/response"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

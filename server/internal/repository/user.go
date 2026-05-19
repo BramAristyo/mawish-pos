@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )

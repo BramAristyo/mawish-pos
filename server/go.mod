@@ -1,4 +1,4 @@
-module github.com/BramAristyo/saas-pos-core/server
+module github.com/BramAristyo/mawish-pos/server
 
 go 1.25.7
 

@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/handler"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/handler"
 	"github.com/gin-gonic/gin"
 )
 

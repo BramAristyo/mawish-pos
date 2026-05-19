@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/constant"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/internal/constant"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )

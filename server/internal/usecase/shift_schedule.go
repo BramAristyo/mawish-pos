@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/dto"
-	"github.com/BramAristyo/saas-pos-core/server/internal/repository"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/dto"
+	"github.com/BramAristyo/mawish-pos/server/internal/repository"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
 	"github.com/google/uuid"
 )
 
@@ -38,7 +38,7 @@ func (u *ShiftScheduleUseCase) FindById(ctx context.Context, id uuid.UUID) (dto.
 
 func (u *ShiftScheduleUseCase) Store(ctx context.Context, req dto.ShiftScheduleRequest) (dto.ShiftScheduleResponse, error) {
 	s := dto.ToShiftScheduleDomain(req)
-	
+
 	result, err := u.repo.Store(ctx, &s)
 	if err != nil {
 		return dto.ShiftScheduleResponse{}, err
@@ -65,7 +65,7 @@ func (u *ShiftScheduleUseCase) Restore(ctx context.Context, id uuid.UUID) (dto.S
 	if err := u.repo.Restore(ctx, id); err != nil {
 		return dto.ShiftScheduleResponse{}, err
 	}
-	
+
 	s, err := u.repo.FindById(ctx, id)
 	if err != nil {
 		return dto.ShiftScheduleResponse{}, err

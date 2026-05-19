@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/middleware"
-	"github.com/BramAristyo/saas-pos-core/server/internal/dependency"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/middleware"
+	"github.com/BramAristyo/mawish-pos/server/internal/dependency"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -67,4 +67,3 @@ func RegisterRoutes(r *gin.Engine, h *dependency.Handlers, cfg *config.Config) {
 		LedgerRoutes(ledger, h.Ledger)
 	}
 }
-

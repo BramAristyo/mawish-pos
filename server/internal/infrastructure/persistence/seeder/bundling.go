@@ -1,7 +1,7 @@
 package seeder
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -11,7 +11,7 @@ import (
 func SeedBundlingData(db *gorm.DB) {
 	pkgID := uuid.MustParse("00000000-0000-0000-0000-000000000701")
 	desc := "Perfect morning combo"
-	
+
 	bundlingPackage := domain.BundlingPackage{
 		ID:          pkgID,
 		Name:        "Breakfast Bundle",

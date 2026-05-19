@@ -1,38 +1,38 @@
 package dependency
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/handler"
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/validation"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
-	"github.com/BramAristyo/saas-pos-core/server/internal/repository"
-	"github.com/BramAristyo/saas-pos-core/server/internal/usecase"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/handler"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/validation"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/internal/repository"
+	"github.com/BramAristyo/mawish-pos/server/internal/usecase"
 	"gorm.io/gorm"
 )
 
 type Handlers struct {
-	Auth          *handler.AuthHandler
-	User          *handler.UserHandler
-	Category      *handler.CategoryHandler
-	Product       *handler.ProductHandler
-	ModifierGroup *handler.ModifierGroupHandler
-	Bundling      *handler.BundlingHandler
-	Tax           *handler.TaxHandler
-	Discount      *handler.DiscountHandler
-	Shift         *handler.ShiftHandler
-	SalesType     *handler.SalesTypeHandler
-	Order         *handler.OrderHandler
-	Report        *handler.ReportHandler
-	Dashboard     *handler.DashboardHandler
-	COA           *handler.COAHandler
-	Employee      *handler.EmployeeHandler
-	Attendance    *handler.AttendanceHandler
-	Payroll       *handler.PayrollHandler
+	Auth            *handler.AuthHandler
+	User            *handler.UserHandler
+	Category        *handler.CategoryHandler
+	Product         *handler.ProductHandler
+	ModifierGroup   *handler.ModifierGroupHandler
+	Bundling        *handler.BundlingHandler
+	Tax             *handler.TaxHandler
+	Discount        *handler.DiscountHandler
+	Shift           *handler.ShiftHandler
+	SalesType       *handler.SalesTypeHandler
+	Order           *handler.OrderHandler
+	Report          *handler.ReportHandler
+	Dashboard       *handler.DashboardHandler
+	COA             *handler.COAHandler
+	Employee        *handler.EmployeeHandler
+	Attendance      *handler.AttendanceHandler
+	Payroll         *handler.PayrollHandler
 	ShiftSchedule   *handler.ShiftScheduleHandler
 	CashTransaction *handler.CashTransactionHandler
 	Ledger          *handler.LedgerHandler
-	}
+}
 
-	func Bootstrap(db *gorm.DB, cfg *config.Config) *Handlers {
+func Bootstrap(db *gorm.DB, cfg *config.Config) *Handlers {
 	validation.RegisterCustomValidators()
 
 	userRepository := repository.NewUserRepository(db)
@@ -128,4 +128,3 @@ type Handlers struct {
 		Ledger:          handler.NewLedgerHandler(ledgerUseCase),
 	}
 }
-

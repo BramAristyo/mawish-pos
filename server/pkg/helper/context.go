@@ -3,8 +3,8 @@ package helper
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/constant"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/internal/constant"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/google/uuid"
 )
 

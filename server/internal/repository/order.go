@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/persistence/database"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/persistence/database"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"

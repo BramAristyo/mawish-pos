@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/handler"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/handler"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,4 +28,3 @@ func LedgerRoutes(r *gin.RouterGroup, h *handler.LedgerHandler) {
 	r.GET("/transactions", h.TransactionList)
 	r.GET("/cash-flow", h.CashFlowStatement)
 }
-

@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"gorm.io/gorm"
 )
 

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/persistence/database"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/persistence/database"
 	"gorm.io/gorm"
 )
 

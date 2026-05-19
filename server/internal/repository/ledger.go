@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
@@ -146,7 +146,6 @@ func (r *LedgerRepository) CashFlowStatement(ctx context.Context, startDate stri
 
 	return summary, incomes, expenses, nil
 }
-
 
 func (r *LedgerRepository) FindById(ctx context.Context, id uuid.UUID) (domain.Ledger, error) {
 	var l domain.Ledger

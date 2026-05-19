@@ -7,9 +7,9 @@ import (
 	"runtime/debug"
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/pkg/logger"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/response"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/pkg/logger"
+	"github.com/BramAristyo/mawish-pos/server/pkg/response"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"

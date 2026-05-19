@@ -3,8 +3,8 @@ package dto
 import (
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )

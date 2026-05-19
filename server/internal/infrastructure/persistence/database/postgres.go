@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/logger"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/pkg/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	gormlogger "gorm.io/gorm/logger"
