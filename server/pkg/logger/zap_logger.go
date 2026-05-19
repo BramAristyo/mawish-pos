@@ -4,7 +4,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

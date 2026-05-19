@@ -34,9 +34,14 @@ withDefaults(defineProps<Props>(), {
           <TableCell v-for="j in columnCount" :key="j">
             <div class="flex items-center" :class="{ 'justify-end': j === columnCount }">
               <Skeleton
+                v-if="j === columnCount"
+                class="h-8 w-8 rounded-md"
+              />
+              <Skeleton
+                v-else
                 :class="[
-                  j === columnCount ? 'h-8 w-8 rounded-md' : 'h-4 w-full max-w-50',
-                  j === 1 && 'max-w-30',
+                  'h-4 w-full',
+                  j === 1 ? 'max-w-[120px]' : (i % 2 === 0 ? 'max-w-[180px]' : 'max-w-[150px]')
                 ]"
               />
             </div>

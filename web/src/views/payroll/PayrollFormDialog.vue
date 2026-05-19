@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, onMounted } from 'vue'
+import { computed, reactive, onMounted, ref, watch } from 'vue'
 import { usePayrollStore } from '@/stores/payroll.store'
 import { useEmployeeStore } from '@/stores/employee.store'
 import type { CreatePayrollRequest } from '@/types/payroll.types'
@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { CancelModal } from '@/components/common/cancel'
 import { toast } from 'vue-sonner'
 import { useFormErrors } from '@/composables/common/useFormErrors'
 
@@ -41,6 +42,42 @@ const form = reactive<CreatePayrollRequest>({
   periodStart: '',
   periodEnd: '',
 })
+
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+
+const isDirty = computed(() => {
+  return JSON.stringify(form) !== initialForm.value
+})
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    isOpen.value = false
+  }
+}
+
+function confirmCancel() {
+  isOpen.value = false
+}
+
+function resetForm() {
+  clearErrors()
+  form.employeeID = ''
+  form.periodStart = ''
+  form.periodEnd = ''
+  initialForm.value = JSON.stringify(form)
+}
+
+watch(
+  () => props.open,
+  (open) => {
+    if (open) {
+      resetForm()
+    }
+  },
+)
 
 onMounted(async () => {
   await employeeStore.ensureDataLoaded()
@@ -69,7 +106,11 @@ async function handleSubmit() {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent 
+      class="sm:max-w-[425px]"
+      @pointer-down-outside="(e) => isDirty && e.preventDefault()"
+      @escape-key-down="(e) => isDirty && e.preventDefault()"
+    >
       <form @submit.prevent="handleSubmit">
         <DialogHeader>
           <DialogTitle>Create Payroll</DialogTitle>
@@ -125,12 +166,13 @@ async function handleSubmit() {
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
+          <Button type="button" variant="outline" @click="handleCancel"> Cancel </Button>
           <Button type="submit" :disabled="payrollStore.loading">
             {{ payrollStore.loading ? 'Creating...' : 'Create Payroll' }}
           </Button>
         </DialogFooter>
       </form>
+      <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
     </DialogContent>
   </Dialog>
 </template>

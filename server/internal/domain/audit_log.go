@@ -30,7 +30,7 @@ const (
 	EntityBundling       AuditEntity = "bundling"
 	EntityDiscount       AuditEntity = "discounts"
 	EntitySalesType      AuditEntity = "sales_types"
-	EntityExpense        AuditEntity = "expenses"
+	EntityLedger         AuditEntity = "ledgers"
 	EntityEmployee       AuditEntity = "employees"
 )
 

@@ -30,3 +30,14 @@ type CashTransaction struct {
 	COA   ChartOfAccount `gorm:"foreignKey:COAID"`
 	Shift *Shift         `gorm:"foreignKey:ShiftID"`
 }
+
+func (ct *CashTransaction) ToLedgerModel() Ledger {
+	return Ledger{
+		COAID:           ct.COAID,
+		Amount:          ct.Amount,
+		Notes:           ct.Description,
+		ReferenceID:     ct.ID,
+		ReferenceType:   LedgerCashTransaction,
+		TransactionDate: ct.Date,
+	}
+}

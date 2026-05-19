@@ -1,6 +1,10 @@
 package filter
 
-import "time"
+import (
+	"time"
+
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
+)
 
 type FilterOperator string
 
@@ -72,4 +76,27 @@ func (df *DynamicFilter) WithDefaultDateRange() {
 			FilterType: DataTypeDate,
 		}
 	}
+}
+
+func (df *DynamicFilter) ValidateHasDateRange() error {
+	if len(df.Filter) == 0 {
+		return usecase_errors.DateFilterRequired
+	}
+
+	hasValidDateRange := false
+
+	for _, f := range df.Filter {
+		if f.FilterType == DataTypeDate && f.Type == OpInRange {
+			if f.From != "" && f.To != "" {
+				hasValidDateRange = true
+				break
+			}
+		}
+	}
+
+	if !hasValidDateRange {
+		return usecase_errors.DateFilterRequired
+	}
+
+	return nil
 }

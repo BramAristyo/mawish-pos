@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/middleware"
-	"github.com/BramAristyo/saas-pos-core/server/internal/dependency"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/middleware"
+	"github.com/BramAristyo/mawish-pos/server/internal/dependency"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
 	"github.com/gin-gonic/gin"
 )
 
@@ -40,6 +40,8 @@ func RegisterRoutes(r *gin.Engine, h *dependency.Handlers, cfg *config.Config) {
 		attendances := v1.Group("/attendances", middleware.Authentication(cfg))
 		payrolls := v1.Group("/payrolls", middleware.Authentication(cfg))
 		shiftSchedules := v1.Group("/shift-schedules", middleware.Authentication(cfg))
+		cashTransactions := v1.Group("/cash-transactions", middleware.Authentication(cfg))
+		ledger := v1.Group("/ledger", middleware.Authentication(cfg))
 
 		v1.POST("/", h.Auth.Login)
 		v1.GET("/me", middleware.Authentication(cfg), h.Auth.Me)
@@ -61,5 +63,7 @@ func RegisterRoutes(r *gin.Engine, h *dependency.Handlers, cfg *config.Config) {
 		AttendanceRoutes(attendances, h.Attendance)
 		PayrollRoutes(payrolls, h.Payroll)
 		ShiftScheduleRoutes(shiftSchedules, h.ShiftSchedule)
+		CashTransactionRoutes(cashTransactions, h.CashTransaction)
+		LedgerRoutes(ledger, h.Ledger)
 	}
 }

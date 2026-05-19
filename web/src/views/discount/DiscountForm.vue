@@ -45,6 +45,10 @@ const form = reactive({
   endDate: '',
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+const isDirty = computed(() => JSON.stringify(form) !== initialForm.value)
+
 watch(
   () => props.initialData,
   (newData) => {
@@ -62,11 +66,22 @@ watch(
       form.startDate = ''
       form.endDate = ''
     }
+    initialForm.value = JSON.stringify(form)
   },
   { immediate: true },
 )
 
-const isCancelModalOpen = ref(false)
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    router.back()
+  }
+}
+
+function confirmCancel() {
+  router.back()
+}
 
 function reset() {
   clearErrors()
@@ -83,6 +98,7 @@ function reset() {
     form.startDate = ''
     form.endDate = ''
   }
+  initialForm.value = JSON.stringify(form)
 }
 
 defineExpose({ reset, setErrors, clearErrors })
@@ -122,7 +138,7 @@ async function handleSubmit() {
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold">{{ initialData ? 'Edit' : 'Create' }} Discount</h2>
       <div class="flex gap-2">
-        <Button variant="outline" @click="isCancelModalOpen = true">
+        <Button variant="outline" @click="handleCancel">
           <X class="size-4 mr-2" />
           Cancel
         </Button>
@@ -208,6 +224,6 @@ async function handleSubmit() {
       </CardContent>
     </Card>
 
-    <CancelModal v-model:open="isCancelModalOpen" @confirm="router.back()" />
+    <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
   </div>
 </template>

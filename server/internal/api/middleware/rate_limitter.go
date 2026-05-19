@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/pkg/logger"
+	"github.com/BramAristyo/mawish-pos/server/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
 )

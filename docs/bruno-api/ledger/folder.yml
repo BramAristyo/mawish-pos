@@ -1,0 +1,4 @@
+info:
+  name: ledger
+auth:
+  type: inherit

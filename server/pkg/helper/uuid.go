@@ -1,7 +1,7 @@
 package helper
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/pkg/usecase_errors"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )

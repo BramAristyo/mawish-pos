@@ -1,7 +1,7 @@
 package seeder
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -9,7 +9,7 @@ import (
 
 func SeedProductModifierData(db *gorm.DB) {
 	milkGroupID := uuid.MustParse("00000000-0000-0000-0000-000000000201")
-	
+
 	// Products: Espresso (0601), Latte (0602), Cappuccino (0606)
 	mappings := []struct {
 		id  string

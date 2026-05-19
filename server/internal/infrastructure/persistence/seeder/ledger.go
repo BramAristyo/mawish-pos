@@ -2,7 +2,8 @@ package seeder
 
 import (
 	"time"
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
@@ -12,7 +13,7 @@ import (
 func SeedLedgerData(db *gorm.DB) {
 	utilsCOA := uuid.MustParse("11111111-1111-1111-1111-111111111111")
 	rentCOA := uuid.MustParse("11111111-1111-1111-1111-111111111113")
-	
+
 	note1 := "Electricity Bill - Jan"
 	note2 := "Water Bill - Jan"
 	note3 := "Store Rent - Jan"
@@ -24,7 +25,7 @@ func SeedLedgerData(db *gorm.DB) {
 			Amount:          decimal.NewFromInt(250000),
 			Notes:           &note1,
 			ReferenceID:     uuid.MustParse("00000000-0000-0000-0000-000000001401"),
-			ReferenceType:   domain.LedgerExpense,
+			ReferenceType:   domain.LedgerCashTransaction,
 			TransactionDate: time.Date(2024, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 		{
@@ -33,7 +34,7 @@ func SeedLedgerData(db *gorm.DB) {
 			Amount:          decimal.NewFromInt(100000),
 			Notes:           &note2,
 			ReferenceID:     uuid.MustParse("00000000-0000-0000-0000-000000001402"),
-			ReferenceType:   domain.LedgerExpense,
+			ReferenceType:   domain.LedgerCashTransaction,
 			TransactionDate: time.Date(2024, 1, 5, 0, 0, 0, 0, time.Local),
 		},
 		{
@@ -42,7 +43,7 @@ func SeedLedgerData(db *gorm.DB) {
 			Amount:          decimal.NewFromInt(5000000),
 			Notes:           &note3,
 			ReferenceID:     uuid.MustParse("00000000-0000-0000-0000-000000001403"),
-			ReferenceType:   domain.LedgerExpense,
+			ReferenceType:   domain.LedgerCashTransaction,
 			TransactionDate: time.Date(2024, 1, 1, 0, 0, 0, 0, time.Local),
 		},
 	}

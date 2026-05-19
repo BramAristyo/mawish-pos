@@ -10,9 +10,8 @@ import (
 type ReferenceType string
 
 const (
-	LedgerShiftExpense ReferenceType = "shiftExpense"
-	LedgerExpense      ReferenceType = "expense"
-	LedgerSales        ReferenceType = "sales"
+	LedgerCashTransaction ReferenceType = "cash_transactions"
+	LedgerShiftSales      ReferenceType = "shifts"
 )
 
 type Ledger struct {

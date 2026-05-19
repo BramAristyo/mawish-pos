@@ -27,5 +27,7 @@ func SeedAll(db *gorm.DB) {
 	SeedShiftData(db)
 	SeedOrderData(db)
 
+	SeedCashTransactionData(db)
 	SeedLedgerData(db)
 }
+

@@ -1,0 +1,11 @@
+info:
+  name: Delete
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{url}}/cash-transactions/66666666-1111-1111-1111-111111111111"
+  auth: inherit
+  body:
+    type: none

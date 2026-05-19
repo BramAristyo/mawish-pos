@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/persistence/database"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/persistence/database"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { useShiftScheduleStore } from '@/stores/shiftSchedule.store'
 import type {
   ShiftSchedule,
@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { CancelModal } from '@/components/common/cancel'
 import { toast } from 'vue-sonner'
 import { useFormErrors } from '@/composables/common/useFormErrors'
 import { AmountInput } from '@/components/common/form/input/amount'
@@ -51,25 +52,58 @@ const form = reactive<CreateShiftScheduleRequest>({
   lateDeductionAmount: 0,
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+
+const isDirty = computed(() => {
+  return JSON.stringify(form) !== initialForm.value
+})
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    isOpen.value = false
+  }
+}
+
+function confirmCancel() {
+  isOpen.value = false
+}
+
+function resetForm() {
+  clearErrors()
+  if (props.shiftSchedule) {
+    form.name = props.shiftSchedule.name
+    form.startTime = props.shiftSchedule.startTime
+    form.endTime = props.shiftSchedule.endTime
+    form.toleranceMinutes = props.shiftSchedule.toleranceMinutes
+    form.lateIntervalMinutes = props.shiftSchedule.lateIntervalMinutes
+    form.lateDeductionAmount = props.shiftSchedule.lateDeductionAmount
+  } else {
+    form.name = ''
+    form.startTime = '08:00'
+    form.endTime = '17:00'
+    form.toleranceMinutes = 0
+    form.lateIntervalMinutes = 0
+    form.lateDeductionAmount = 0
+  }
+  initialForm.value = JSON.stringify(form)
+}
+
+watch(
+  () => props.open,
+  (open) => {
+    if (open) {
+      resetForm()
+    }
+  },
+)
+
 watch(
   () => props.shiftSchedule,
-  (newShift) => {
-    clearErrors()
-    if (newShift) {
-      form.name = newShift.name
-      form.startTime = newShift.startTime
-      form.endTime = newShift.endTime
-      form.toleranceMinutes = newShift.toleranceMinutes
-      form.lateIntervalMinutes = newShift.lateIntervalMinutes
-      form.lateDeductionAmount = newShift.lateDeductionAmount
-    } else {
-      form.name = ''
-      form.startTime = '08:00'
-      form.endTime = '17:00'
-      form.toleranceMinutes = 0
-      form.lateIntervalMinutes = 0
-      form.lateDeductionAmount = 0
-    }
+  () => {
+    resetForm()
   },
   { immediate: true },
 )
@@ -105,7 +139,11 @@ async function handleSubmit() {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent 
+      class="sm:max-w-[425px]"
+      @pointer-down-outside="(e) => isDirty && e.preventDefault()"
+      @escape-key-down="(e) => isDirty && e.preventDefault()"
+    >
       <form @submit.prevent="handleSubmit">
         <DialogHeader>
           <DialogTitle>{{ isEdit ? 'Edit Shift Schedule' : 'Add Shift Schedule' }}</DialogTitle>
@@ -187,12 +225,13 @@ async function handleSubmit() {
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
+          <Button type="button" variant="outline" @click="handleCancel"> Cancel </Button>
           <Button type="submit" :disabled="shiftScheduleStore.loading">
             {{ shiftScheduleStore.loading ? 'Saving...' : 'Save' }}
           </Button>
         </DialogFooter>
       </form>
+      <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
     </DialogContent>
   </Dialog>
 </template>

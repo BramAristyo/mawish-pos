@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/shopspring/decimal"
 )
 

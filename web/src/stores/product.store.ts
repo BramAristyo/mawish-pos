@@ -1,6 +1,6 @@
 import { productApi } from '@/api/product.api'
 import type { BaseFilterRequest, Meta } from '@/types/common.types'
-import type { CreateProductRequest, Product, UpdateProductRequest } from '@/types/product.types'
+import type { Product, StoreProductRequest, UpdateProductRequest } from '@/types/product.types'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -11,19 +11,6 @@ export const useProductStore = defineStore('product', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  async function fetchAll() {
-    loading.value = true
-    error.value = null
-    try {
-      const res = await productApi.getAll()
-      products.value = res.data
-    } catch (err: any) {
-      error.value = err?.message || 'Unsuccessfully get products'
-    } finally {
-      loading.value = false
-    }
-  }
-
   async function fetchPaginated(params: BaseFilterRequest) {
     loading.value = true
     error.value = null
@@ -31,8 +18,23 @@ export const useProductStore = defineStore('product', () => {
       const res = await productApi.paginate(params)
       products.value = res.data
       meta.value = res.meta || null
-    } catch (err: any) {
-      error.value = err?.message || 'Unsuccessfully get products'
+    } catch (err: unknown) {
+      const errorResponse = err as { message?: string }
+      error.value = errorResponse.message || 'Failed to fetch products'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function fetchAll() {
+    loading.value = true
+    error.value = null
+    try {
+      const res = await productApi.getAll()
+      products.value = res.data
+    } catch (err: unknown) {
+      const errorResponse = err as { message?: string }
+      error.value = errorResponse.message || 'Failed to fetch all products'
     } finally {
       loading.value = false
     }
@@ -42,23 +44,26 @@ export const useProductStore = defineStore('product', () => {
     loading.value = true
     error.value = null
     try {
-      const res = await productApi.getById(id)
+      const res = await productApi.findById(id)
       selected.value = res.data
-    } catch (err: any) {
-      error.value = err?.message || 'Unsuccessfully get product'
+    } catch (err: unknown) {
+      const errorResponse = err as { message?: string }
+      error.value = errorResponse.message || 'Failed to fetch product'
     } finally {
       loading.value = false
     }
   }
 
-  async function create(payload: CreateProductRequest) {
+  async function create(payload: StoreProductRequest) {
     loading.value = true
     error.value = null
     try {
-      const res = await productApi.create(payload)
+      const res = await productApi.store(payload)
       products.value = [res.data, ...products.value]
-    } catch (err: any) {
-      error.value = err?.message || 'Unsuccessfully create product'
+      return res.data
+    } catch (err: unknown) {
+      const errorResponse = err as { message?: string }
+      error.value = errorResponse.message || 'Failed to create product'
       throw err
     } finally {
       loading.value = false
@@ -73,22 +78,25 @@ export const useProductStore = defineStore('product', () => {
       const index = products.value.findIndex((p) => p.id === id)
       if (index !== -1) products.value[index] = res.data
       if (selected.value?.id === id) selected.value = res.data
-    } catch (err: any) {
-      error.value = err?.message || 'Unsuccessfully update product'
+      return res.data
+    } catch (err: unknown) {
+      const errorResponse = err as { message?: string }
+      error.value = errorResponse.message || 'Failed to update product'
       throw err
     } finally {
       loading.value = false
     }
   }
 
-  async function remove(id: string) {
+  async function deleteProduct(id: string) {
     loading.value = true
     error.value = null
     try {
       await productApi.delete(id)
       products.value = products.value.filter((p) => p.id !== id)
-    } catch (err: any) {
-      error.value = err?.message || 'Unsuccessfully delete product'
+    } catch (err: unknown) {
+      const errorResponse = err as { message?: string }
+      error.value = errorResponse.message || 'Failed to delete product'
       throw err
     } finally {
       loading.value = false
@@ -99,10 +107,13 @@ export const useProductStore = defineStore('product', () => {
     loading.value = true
     error.value = null
     try {
-      await productApi.restore(id)
-      // Since it was removed from the list on delete, we might want to re-fetch or just handle the list update
-    } catch (err: any) {
-      error.value = err?.message || 'Unsuccessfully restore product'
+      const res = await productApi.restore(id)
+      const index = products.value.findIndex((p) => p.id === id)
+      if (index !== -1) products.value[index] = res.data
+      return res.data
+    } catch (err: unknown) {
+      const errorResponse = err as { message?: string }
+      error.value = errorResponse.message || 'Failed to restore product'
       throw err
     } finally {
       loading.value = false
@@ -110,7 +121,9 @@ export const useProductStore = defineStore('product', () => {
   }
 
   async function ensureDataLoaded() {
-    if (products.value.length === 0) await fetchAll()
+    if (products.value.length === 0) {
+      await fetchAll()
+    }
   }
 
   return {
@@ -119,12 +132,12 @@ export const useProductStore = defineStore('product', () => {
     selected,
     loading,
     error,
-    fetchAll,
     fetchPaginated,
+    fetchAll,
     fetchById,
     create,
     update,
-    remove,
+    delete: deleteProduct,
     restore,
     ensureDataLoaded,
   }

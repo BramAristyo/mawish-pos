@@ -3,10 +3,10 @@ package usecase
 import (
 	"context"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/dto"
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/internal/repository"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/dto"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/repository"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
 )
 
 type AttendanceUseCase struct {
@@ -53,6 +53,6 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.AttendanceRequest
 	// But for now let's just return the created one
 	// Usually Store returns the domain which might not have Preloads
 	// Let's re-fetch if needed or just use what we have
-	
+
 	return dto.ToAttendanceResponses([]domain.Attendance{res})[0], nil
 }

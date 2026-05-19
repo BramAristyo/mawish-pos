@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref } from 'vue'
 import { useCoaStore } from '@/stores/coa.store'
 import type { Coa, CreateCoaRequest, UpdateCoaRequest } from '@/types/coa.types'
 import type { ValidationError } from '@/types/common.types'
@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldContent, FieldLabel, FieldError } from '@/components/ui/field'
 import { Toggle } from '@/components/common/form'
+import { CancelModal } from '@/components/common/cancel'
 import { toast } from 'vue-sonner'
 import { useFormErrors } from '@/composables/common/useFormErrors'
 
@@ -46,6 +47,39 @@ const form = reactive<CreateCoaRequest>({
   isOperational: false,
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+
+const isDirty = computed(() => {
+  return JSON.stringify(form) !== initialForm.value
+})
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    isOpen.value = false
+  }
+}
+
+function confirmCancel() {
+  isOpen.value = false
+}
+
+function resetForm() {
+  clearErrors()
+  if (props.coa) {
+    form.name = props.coa.name
+    form.type = props.coa.type
+    form.isOperational = props.coa.IsOperational
+  } else {
+    form.name = ''
+    form.type = 'in'
+    form.isOperational = false
+  }
+  initialForm.value = JSON.stringify(form)
+}
+
 const typeOptions = [
   { label: 'Income', value: 'in' },
   { label: 'Expenses', value: 'out' },
@@ -57,18 +91,18 @@ const operationalOptions = [
 ]
 
 watch(
-  () => props.coa,
-  (newCoa) => {
-    clearErrors()
-    if (newCoa) {
-      form.name = newCoa.name
-      form.type = newCoa.type
-      form.isOperational = newCoa.IsOperational
-    } else {
-      form.name = ''
-      form.type = 'in'
-      form.isOperational = false
+  () => props.open,
+  (open) => {
+    if (open) {
+      resetForm()
     }
+  },
+)
+
+watch(
+  () => props.coa,
+  () => {
+    resetForm()
   },
   { immediate: true },
 )
@@ -97,7 +131,11 @@ async function handleSubmit() {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="sm:max-w-106.25">
+    <DialogContent 
+      class="sm:max-w-106.25"
+      @pointer-down-outside="(e) => isDirty && e.preventDefault()"
+      @escape-key-down="(e) => isDirty && e.preventDefault()"
+    >
       <form @submit.prevent="handleSubmit">
         <DialogHeader>
           <DialogTitle>{{ isEdit ? 'Edit Account' : 'Add Account' }}</DialogTitle>
@@ -148,12 +186,13 @@ async function handleSubmit() {
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
+          <Button type="button" variant="outline" @click="handleCancel"> Cancel </Button>
           <Button type="submit" :disabled="coaStore.loading">
             {{ coaStore.loading ? 'Saving...' : 'Save' }}
           </Button>
         </DialogFooter>
       </form>
+      <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
     </DialogContent>
   </Dialog>
 </template>

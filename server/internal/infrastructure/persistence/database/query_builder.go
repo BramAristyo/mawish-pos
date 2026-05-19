@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
 	"gorm.io/gorm"
 )
 

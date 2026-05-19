@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/persistence/database"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/persistence/seeder"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/logger"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/persistence/database"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/persistence/seeder"
+	"github.com/BramAristyo/mawish-pos/server/pkg/logger"
 	"github.com/pressly/goose/v3"
 )
 

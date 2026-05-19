@@ -16,8 +16,11 @@ import { Button } from '@/components/ui/button'
 import { AmountInput } from '@/components/common/form/input/amount'
 import { Label } from '@/components/ui/label'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
+import { REGEXP_ONLY_DIGITS } from 'vue-input-otp'
+import { CancelModal } from '@/components/common/cancel'
 import { toast } from 'vue-sonner'
 import { useFormErrors } from '@/composables/common/useFormErrors'
+import { ref } from 'vue'
 
 const props = defineProps<{
   open: boolean
@@ -47,21 +50,54 @@ const form = reactive<CreateEmployeeRequest>({
   pin: '',
 })
 
+const initialForm = ref<string>('')
+const showCancelModal = ref(false)
+
+const isDirty = computed(() => {
+  return JSON.stringify(form) !== initialForm.value
+})
+
+function handleCancel() {
+  if (isDirty.value) {
+    showCancelModal.value = true
+  } else {
+    isOpen.value = false
+  }
+}
+
+function confirmCancel() {
+  isOpen.value = false
+}
+
+function resetForm() {
+  clearErrors()
+  if (props.employee) {
+    form.name = props.employee.name
+    form.phone = props.employee.phone
+    form.baseSalary = props.employee.baseSalary
+    form.pin = ''
+  } else {
+    form.name = ''
+    form.phone = ''
+    form.baseSalary = 0
+    form.pin = ''
+  }
+  initialForm.value = JSON.stringify(form)
+}
+
+watch(
+  () => props.open,
+  (open) => {
+    if (open) {
+      resetForm()
+    }
+  },
+)
+
 watch(
   () => props.employee,
-  (newEmployee) => {
-    clearErrors()
-    if (newEmployee) {
-      form.name = newEmployee.name
-      form.phone = newEmployee.phone
-      form.baseSalary = newEmployee.baseSalary
-      form.pin = ''
-    } else {
-      form.name = ''
-      form.phone = ''
-      form.baseSalary = 0
-      form.pin = ''
-    }
+  () => {
+    resetForm()
   },
   { immediate: true },
 )
@@ -95,7 +131,11 @@ async function handleSubmit() {
 
 <template>
   <Dialog v-model:open="isOpen">
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent 
+      class="sm:max-w-106.25"
+      @pointer-down-outside="(e) => isDirty && e.preventDefault()"
+      @escape-key-down="(e) => isDirty && e.preventDefault()"
+    >
       <form @submit.prevent="handleSubmit">
         <DialogHeader>
           <DialogTitle>{{ isEdit ? 'Edit Employee' : 'Add Employee' }}</DialogTitle>
@@ -137,7 +177,7 @@ async function handleSubmit() {
           </div>
 
           <div class="grid gap-2">
-            <Label for="baseSalary">Base Salary</Label>
+            <Label for="baseSalary">Base Salary per Shift</Label>
             <AmountInput
               id="baseSalary"
               v-model="form.baseSalary"
@@ -152,7 +192,7 @@ async function handleSubmit() {
 
           <div class="grid gap-2">
             <Label for="pin">PIN (6 Digits)</Label>
-            <InputOTP id="pin" v-model="form.pin" :maxlength="6" class="w-full">
+            <InputOTP id="pin" v-model="form.pin" :maxlength="6" :pattern="REGEXP_ONLY_DIGITS" class="w-full">
               <InputOTPGroup class="w-full flex">
                 <InputOTPSlot :index="0" class="flex-1 h-12" />
                 <InputOTPSlot :index="1" class="flex-1 h-12" />
@@ -172,12 +212,13 @@ async function handleSubmit() {
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" @click="isOpen = false"> Cancel </Button>
+          <Button type="button" variant="outline" @click="handleCancel"> Cancel </Button>
           <Button type="submit" :disabled="employeeStore.loading">
             {{ employeeStore.loading ? 'Saving...' : 'Save' }}
           </Button>
         </DialogFooter>
       </form>
+      <CancelModal v-model:open="showCancelModal" @confirm="confirmCancel" />
     </DialogContent>
   </Dialog>
 </template>

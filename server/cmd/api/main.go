@@ -10,12 +10,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/middleware"
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/router"
-	"github.com/BramAristyo/saas-pos-core/server/internal/dependency"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/config"
-	"github.com/BramAristyo/saas-pos-core/server/internal/infrastructure/persistence/database"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/logger"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/middleware"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/router"
+	"github.com/BramAristyo/mawish-pos/server/internal/dependency"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/persistence/database"
+	"github.com/BramAristyo/mawish-pos/server/pkg/logger"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 )

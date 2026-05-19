@@ -1,0 +1,11 @@
+info:
+  name: Paginate
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{url}}/cash-transactions?page=1&pageSize=10"
+  auth: inherit
+  body:
+    type: none

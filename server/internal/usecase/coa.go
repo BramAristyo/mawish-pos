@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/dto"
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
-	"github.com/BramAristyo/saas-pos-core/server/internal/repository"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/filter"
-	"github.com/BramAristyo/saas-pos-core/server/pkg/helper"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/dto"
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
+	"github.com/BramAristyo/mawish-pos/server/internal/repository"
+	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/pkg/helper"
 	"github.com/google/uuid"
 )
 
@@ -70,7 +70,8 @@ func (u *COAUseCase) Store(ctx context.Context, req dto.CreateCOARequest) (dto.C
 	go u.LogUseCase.Log(context.Background(), domain.AuditLog{
 		UserID:      userId,
 		Action:      domain.ActionCreate,
-		Entity:      domain.EntityExpense, // Using EntityExpense as placeholder or add EntityCOA
+		Entity:      domain.EntityLedger, // Using EntityLedger as placeholder or add EntityCOA
+		EntityID:    &stored.ID,
 		Description: fmt.Sprintf("User created a new COA: %s (%s)", stored.Name, stored.Type),
 	})
 
@@ -89,7 +90,8 @@ func (u *COAUseCase) Update(ctx context.Context, id uuid.UUID, req dto.UpdateCOA
 	go u.LogUseCase.Log(context.Background(), domain.AuditLog{
 		UserID:      userId,
 		Action:      domain.ActionUpdate,
-		Entity:      domain.EntityExpense,
+		Entity:      domain.EntityLedger,
+		EntityID:    &id,
 		Description: fmt.Sprintf("User updated COA: %s (%s)", updated.Name, updated.Type),
 	})
 
@@ -111,7 +113,8 @@ func (u *COAUseCase) Delete(ctx context.Context, id uuid.UUID) error {
 	go u.LogUseCase.Log(context.Background(), domain.AuditLog{
 		UserID:      userId,
 		Action:      domain.ActionDelete,
-		Entity:      domain.EntityExpense,
+		Entity:      domain.EntityLedger,
+		EntityID:    &id,
 		Description: fmt.Sprintf("User deleted COA: %s", coa.Name),
 	})
 
@@ -133,7 +136,8 @@ func (u *COAUseCase) Restore(ctx context.Context, id uuid.UUID) (dto.ChartOfAcco
 	go u.LogUseCase.Log(context.Background(), domain.AuditLog{
 		UserID:      userId,
 		Action:      domain.ActionRestore,
-		Entity:      domain.EntityExpense,
+		Entity:      domain.EntityLedger,
+		EntityID:    &id,
 		Description: fmt.Sprintf("User restored COA: %s", coa.Name),
 	})
 

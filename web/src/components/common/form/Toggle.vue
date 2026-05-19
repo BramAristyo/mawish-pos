@@ -12,6 +12,7 @@ interface Props {
   options: Option[]
   label?: string
   description?: string
+  disabled?: boolean
 }
 
 defineProps<Props>()
@@ -37,6 +38,7 @@ const emit = defineEmits<{
         :variant="modelValue === option.value ? 'default' : 'ghost'"
         size="sm"
         class="min-w-24 transition-all"
+        :disabled="disabled"
         @click="emit('update:modelValue', option.value)"
       >
         {{ option.label }}

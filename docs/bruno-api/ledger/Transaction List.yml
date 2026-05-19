@@ -1,0 +1,73 @@
+info:
+  name: Transaction List
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{url}}/ledger/transactions"
+  auth: inherit
+
+query:
+  ~pageNumber: 1
+  ~pageSize: 10
+  ~search: 
+  ~filter[transactionDate][type]: inRange
+  ~filter[transactionDate][from]: 2026-05-01
+  ~filter[transactionDate][to]: 2026-05-31
+  ~filter[transactionDate][filterType]: date
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+examples:
+  - name: Coffee Shop Transactions
+    request:
+      url: "{{url}}/ledger/transactions?filter[transactionDate][type]=inRange&filter[transactionDate][from]=2026-05-01&filter[transactionDate][to]=2026-05-31&filter[transactionDate][filterType]=date"
+      method: GET
+    response:
+      status: 200
+      statusText: OK
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "data": {
+              "openingBalance": "5000000",
+              "totalIncome": "1500000",
+              "totalExpense": "200000",
+              "total": "6300000",
+              "transactions": [
+                {
+                  "transactionDate": "2026-05-05T10:00:00Z",
+                  "referenceType": "shifts",
+                  "coaName": "Coffee Sales",
+                  "coaType": "Income",
+                  "runningBalance": "5150000"
+                },
+                {
+                  "transactionDate": "2026-05-05T11:30:00Z",
+                  "referenceType": "cash_transactions",
+                  "coaName": "Milk Supply",
+                  "coaType": "Expense",
+                  "runningBalance": "5100000"
+                }
+              ],
+              "meta": {
+                "page": 1,
+                "pageSize": 10,
+                "totalRows": 2,
+                "totalPages": 1,
+                "hasNext": false,
+                "hasPrev": false
+              }
+            },
+            "message": "Transaction list retrieved successfully"
+          }

@@ -2,7 +2,8 @@ package seeder
 
 import (
 	"fmt"
-	"github.com/BramAristyo/saas-pos-core/server/internal/domain"
+
+	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"

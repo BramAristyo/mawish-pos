@@ -30,6 +30,24 @@ const router = createRouter({
       meta: { requiresAuth: true, title: 'Categories' },
     },
     {
+      path: '/catalog/products',
+      name: 'products',
+      component: () => import('@/views/catalog/product/ProductView.vue'),
+      meta: { requiresAuth: true, title: 'Products' },
+    },
+    {
+      path: '/catalog/products/create',
+      name: 'product-create',
+      component: () => import('@/views/catalog/product/ProductCreateView.vue'),
+      meta: { requiresAuth: true, title: 'Create Product' },
+    },
+    {
+      path: '/catalog/products/:id/edit',
+      name: 'product-edit',
+      component: () => import('@/views/catalog/product/ProductEditView.vue'),
+      meta: { requiresAuth: true, title: 'Edit Product' },
+    },
+    {
       path: '/modifiers',
       name: 'modifiers',
       component: () => import('@/views/modifier/ModifierView.vue'),
@@ -106,6 +124,24 @@ const router = createRouter({
       name: 'payroll',
       component: () => import('@/views/payroll/PayrollView.vue'),
       meta: { requiresAuth: true, title: 'Payroll' },
+    },
+    {
+      path: '/accounting/cash-transactions',
+      name: 'cash-transactions',
+      component: () => import('@/views/accounting/cash-transaction/CashTransactionView.vue'),
+      meta: { requiresAuth: true, title: 'Cash Transactions' },
+    },
+    {
+      path: '/accounting/cash-transactions/create',
+      name: 'cash-transaction-create',
+      component: () => import('@/views/accounting/cash-transaction/CashTransactionCreateView.vue'),
+      meta: { requiresAuth: true, title: 'Create Cash Transaction' },
+    },
+    {
+      path: '/accounting/cash-transactions/:id/edit',
+      name: 'cash-transaction-edit',
+      component: () => import('@/views/accounting/cash-transaction/CashTransactionEditView.vue'),
+      meta: { requiresAuth: true, title: 'Edit Cash Transaction' },
     },
     {
       path: '/:pathMatch(.*)*',

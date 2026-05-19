@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/BramAristyo/saas-pos-core/server/internal/api/validation"
+	"github.com/BramAristyo/mawish-pos/server/internal/api/validation"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -45,6 +45,6 @@ var (
 	InvalidOrderItem   = &UseCaseError{http.StatusBadRequest, "order item must have either product or bundling"}
 	EmptyOrderItems    = &UseCaseError{http.StatusBadRequest, "order must contain at least one item"}
 	OrderAlreadyVoided = &UseCaseError{http.StatusBadRequest, "order already voided"}
-	DateFilterRequired = &UseCaseError{http.StatusBadRequest, "transaction date filter (from/to) is required"}
+	DateFilterRequired = &UseCaseError{http.StatusBadRequest, "date filter (from/to) is required"}
 	LedgerRecordFailed = &UseCaseError{http.StatusInternalServerError, "transaction saved but failed to record ledger entry"}
 )

@@ -1,6 +1,10 @@
 import http from '@/lib/http'
 import type { BaseFilterRequest, BaseResponse } from '@/types/common.types'
-import type { CreateProductRequest, Product, UpdateProductRequest } from '@/types/product.types'
+import type {
+  Product,
+  StoreProductRequest,
+  UpdateProductRequest,
+} from '@/types/product.types'
 
 export const productApi = {
   paginate: (params: BaseFilterRequest) =>
@@ -8,9 +12,9 @@ export const productApi = {
 
   getAll: () => http.get<any, BaseResponse<Product[]>>('/products/get-all'),
 
-  getById: (id: string) => http.get<any, BaseResponse<Product>>(`/products/${id}`),
+  findById: (id: string) => http.get<any, BaseResponse<Product>>(`/products/${id}`),
 
-  create: (payload: CreateProductRequest) =>
+  store: (payload: StoreProductRequest) =>
     http.post<any, BaseResponse<Product>>('/products', payload),
 
   update: (id: string, payload: UpdateProductRequest) =>
