@@ -23,6 +23,9 @@ type AttendanceResponse struct {
 	LateMinutes       int             `json:"lateMinutes"`
 	DeductionAmount   decimal.Decimal `json:"deductionAmount"`
 	DeletedAt         *string         `json:"deletedAt,omitempty"`
+	PhotoKey          *string         `json:"photoKey,omitempty"`
+
+	UploadURL string `json:"uploadUrl"`
 }
 
 type AttendanceResponsePagination struct {
@@ -87,6 +90,64 @@ func ToAttendanceDomain(req AttendanceRequest) (domain.Attendance, error) {
 	}, nil
 }
 
+func ToCreateAttedanceResponse(a domain.Attendance, uploadUrl string) AttendanceResponse {
+	var empCode, empName string
+	if a.Employee != nil {
+		empCode = a.Employee.Code
+		empName = a.Employee.Name
+	}
+
+	dateStr := a.Date.Format("2006-01-02")
+
+	var checkInStr string
+	if a.CheckIn != nil {
+		checkInStr = a.CheckIn.Format("15:04")
+	}
+
+	var checkOutStr *string
+	var totalWorkMinsStr *string
+
+	if a.CheckOut != nil {
+		co := a.CheckOut.Format("15:04")
+		checkOutStr = &co
+
+		if a.CheckIn != nil {
+			duration := a.CheckOut.Sub(*a.CheckIn)
+			strMins := fmt.Sprintf("%d", int(duration.Minutes()))
+			totalWorkMinsStr = &strMins
+		}
+	}
+
+	var shiftName string
+	if a.ShiftSchedule != nil {
+		shiftName = a.ShiftSchedule.Name
+	}
+
+	var delAt *string
+	if a.DeletedAt.Valid {
+		t := a.DeletedAt.Time.Format("2006-01-02 15:04:05")
+		delAt = &t
+	}
+
+	return AttendanceResponse{
+		ID:                a.ID,
+		EmployeeCode:      empCode,
+		EmployeeName:      empName,
+		Date:              dateStr,
+		CheckIn:           checkInStr,
+		CheckOut:          checkOutStr,
+		TotalWorkMinutes:  totalWorkMinsStr,
+		ShiftScheduleName: shiftName,
+		Notes:             a.Notes,
+		LateMinutes:       a.LateMinutes,
+		DeductionAmount:   decimal.NewFromFloat(a.DeductionAmount),
+		DeletedAt:         delAt,
+		PhotoKey:          a.PhotoKey,
+
+		UploadURL: uploadUrl,
+	}
+}
+
 func ToAttendanceResponses(as []domain.Attendance) []AttendanceResponse {
 	res := make([]AttendanceResponse, 0, len(as))
 
@@ -142,6 +203,7 @@ func ToAttendanceResponses(as []domain.Attendance) []AttendanceResponse {
 			LateMinutes:       a.LateMinutes,
 			DeductionAmount:   decimal.NewFromFloat(a.DeductionAmount),
 			DeletedAt:         delAt,
+			PhotoKey:          a.PhotoKey,
 		})
 	}
 

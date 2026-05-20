@@ -19,6 +19,7 @@ type Attendance struct {
 	ShiftScheduleID *uuid.UUID
 	ShiftSchedule   *ShiftSchedule `gorm:"foreignKey:ShiftScheduleID"`
 	Notes           *string        `gorm:"type:text"`
+	PhotoKey        *string        `gorm:"type:varchar(500)"`
 	CreatedAt       time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt       time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt       gorm.DeletedAt `gorm:"index"`

@@ -47,4 +47,6 @@ var (
 	OrderAlreadyVoided = &UseCaseError{http.StatusBadRequest, "order already voided"}
 	DateFilterRequired = &UseCaseError{http.StatusBadRequest, "date filter (from/to) is required"}
 	LedgerRecordFailed = &UseCaseError{http.StatusInternalServerError, "transaction saved but failed to record ledger entry"}
+	PhotoNotFound      = &UseCaseError{http.StatusNotFound, "photo not found, please upload again"}
+	PhotoVerifyError   = &UseCaseError{http.StatusInternalServerError, "failed to verify photo upload"}
 )
