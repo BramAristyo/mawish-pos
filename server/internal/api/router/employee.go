@@ -20,6 +20,11 @@ func AttendanceRoutes(r *gin.RouterGroup, h *handler.AttendanceHandler) {
 	r.POST("", h.Store)
 }
 
+func AttendanceSettingRoutes(r *gin.RouterGroup, h *handler.AttendanceSettingHandler) {
+	r.GET("", h.Get)
+	r.POST("", h.Update)
+}
+
 func ShiftScheduleRoutes(r *gin.RouterGroup, h *handler.ShiftScheduleHandler) {
 	r.GET("", h.Paginate)
 	r.GET("/all", h.GetAll)

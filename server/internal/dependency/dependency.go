@@ -26,6 +26,7 @@ type Handlers struct {
 	COA             *handler.COAHandler
 	Employee        *handler.EmployeeHandler
 	Attendance      *handler.AttendanceHandler
+	AttendanceSetting *handler.AttendanceSettingHandler
 	Payroll         *handler.PayrollHandler
 	ShiftSchedule   *handler.ShiftScheduleHandler
 	CashTransaction *handler.CashTransactionHandler
@@ -81,8 +82,10 @@ func Bootstrap(db *gorm.DB, cfg *config.Config) *Handlers {
 	employeeUseCase := usecase.NewEmployeeUseCase(employeeRepository, auditLogUseCase)
 
 	attendanceRepository := repository.NewAttendanceRepository(db)
+	attendanceSettingRepository := repository.NewAttendanceSettingRepository(db)
 	shiftScheduleRepository := repository.NewShiftScheduleRepository(db)
 	attendanceUseCase := usecase.NewAttendanceUseCase(attendanceRepository, shiftScheduleRepository)
+	attendanceSettingUseCase := usecase.NewAttendanceSettingUseCase(attendanceSettingRepository)
 
 	shiftScheduleUseCase := usecase.NewShiftScheduleUseCase(shiftScheduleRepository)
 
@@ -122,6 +125,7 @@ func Bootstrap(db *gorm.DB, cfg *config.Config) *Handlers {
 		COA:             handler.NewCOAHandler(coaUseCase),
 		Employee:        handler.NewEmployeeHandler(employeeUseCase),
 		Attendance:      handler.NewAttendanceHandler(attendanceUseCase),
+		AttendanceSetting: handler.NewAttendanceSettingHandler(attendanceSettingUseCase),
 		Payroll:         handler.NewPayrollHandler(payrollUseCase),
 		ShiftSchedule:   handler.NewShiftScheduleHandler(shiftScheduleUseCase),
 		CashTransaction: handler.NewCashTransactionHandler(cashTransactionUseCase),
