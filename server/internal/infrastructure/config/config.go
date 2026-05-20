@@ -33,10 +33,19 @@ type JWTConfig struct {
 	Secret                    string
 }
 
+type R2Config struct {
+	AccountID       string
+	AccessKey       string
+	SecretAccessKey string
+	BucketName      string
+	PresignExpires  int
+}
+
 type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
 	JWT      JWTConfig
+	R2       R2Config
 }
 
 func GetConfig() *Config {
@@ -87,6 +96,13 @@ func GetConfig() *Config {
 		JWT: JWTConfig{
 			AccessTokenExpireDuration: viper.GetDuration("JWT_ACCESS_TOKEN_EXPIRE_DURATION"),
 			Secret:                    viper.GetString("JWT_SECRET_KEY"),
+		},
+		R2: R2Config{
+			AccountID:       viper.GetString("R2_ACCOUNT_ID"),
+			AccessKey:       viper.GetString("R2_ACCESS_KEY"),
+			SecretAccessKey: viper.GetString("R2_SECRET_ACCESS_KEY"),
+			BucketName:      viper.GetString("R2_BUCKET_NAME"),
+			PresignExpires:  viper.GetInt("R2_PRESIGN_EXPIRES"),
 		},
 	}
 }
