@@ -49,7 +49,6 @@ func (u *AttendanceUseCase) Paginate(ctx context.Context, req filter.PaginationW
 }
 
 func (u *AttendanceUseCase) Store(ctx context.Context, req dto.CreateAttendanceRequest) (dto.AttendanceResponse, error) {
-	// Verify Employee
 	employee, err := u.EmployeeRepo.FindByCode(ctx, req.EmployeeCode)
 	if err != nil {
 		return dto.AttendanceResponse{}, err
@@ -67,7 +66,6 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.CreateAttendanceR
 
 	attendance.EmployeeID = employee.ID
 
-	// Detect Shift Schedule
 	if attendance.CheckIn != nil {
 		schedules, err := u.ShiftRepo.GetAll(ctx)
 		if err == nil {
@@ -75,8 +73,6 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.CreateAttendanceR
 			checkInTime := attendance.CheckIn.Format("15:04:05")
 
 			for _, s := range schedules {
-				// Simple check: if check-in is between StartTime - 2h and EndTime + 1h
-				// We need to parse StartTime and EndTime into comparable formats
 				start, _ := time.Parse("15:04:05", s.StartTime)
 				if s.StartTime == "" || len(s.StartTime) < 5 { // Fallback for 15:04
 					start, _ = time.Parse("15:04", s.StartTime)
@@ -89,12 +85,9 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.CreateAttendanceR
 
 				nowTime, _ := time.Parse("15:04:05", checkInTime)
 
-				// Buffer for check-in: 2 hours before start
 				bufferStart := start.Add(-2 * time.Hour)
-				// Buffer for check-out: 2 hours after end (or just use EndTime)
 				bufferEnd := end.Add(2 * time.Hour)
 
-				// Handle shifts crossing midnight
 				if end.Before(start) {
 					if nowTime.After(bufferStart) || nowTime.Before(bufferEnd) {
 						activeShift = &s
@@ -115,7 +108,6 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.CreateAttendanceR
 		}
 	}
 
-	// Calculate Location Status
 	if req.Lat != nil && req.Lng != nil {
 		setting, err := u.AttendanceSettingRepo.Find(ctx)
 		if err == nil {
