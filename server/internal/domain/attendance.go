@@ -7,6 +7,13 @@ import (
 	"gorm.io/gorm"
 )
 
+type LocationStatus string
+
+const (
+	LocationStatusInArea  LocationStatus = "IN_AREA"
+	LocationStatusOutArea LocationStatus = "OUT_AREA"
+)
+
 type Attendance struct {
 	ID              uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
 	EmployeeID      uuid.UUID `gorm:"type:uuid;not null"`
@@ -14,8 +21,9 @@ type Attendance struct {
 	Date            time.Time `gorm:"type:date;not null"`
 	CheckIn         *time.Time
 	CheckOut        *time.Time
-	LateMinutes     int     `gorm:"default:0"`
-	DeductionAmount float64 `gorm:"type:decimal(12,2);default:0"`
+	LateMinutes     int            `gorm:"default:0"`
+	DeductionAmount float64        `gorm:"type:decimal(12,2);default:0"`
+	LocationStatus  LocationStatus `gorm:"type:varchar(20)"`
 	ShiftScheduleID *uuid.UUID
 	ShiftSchedule   *ShiftSchedule `gorm:"foreignKey:ShiftScheduleID"`
 	Notes           *string        `gorm:"type:text"`

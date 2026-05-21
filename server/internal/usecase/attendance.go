@@ -13,20 +13,23 @@ import (
 )
 
 type AttendanceUseCase struct {
-	Repo        *repository.AttendanceRepository
-	ShiftRepo   *repository.ShiftScheduleRepository
-	StorageRepo domain.StorageRepository
+	Repo                  *repository.AttendanceRepository
+	ShiftRepo             *repository.ShiftScheduleRepository
+	AttendanceSettingRepo *repository.AttendanceSettingRepository
+	StorageRepo           domain.StorageRepository
 }
 
 func NewAttendanceUseCase(
 	repo *repository.AttendanceRepository,
 	shiftRepo *repository.ShiftScheduleRepository,
+	attendanceSettingRepo *repository.AttendanceSettingRepository,
 	storageRepo domain.StorageRepository,
 ) *AttendanceUseCase {
 	return &AttendanceUseCase{
-		Repo:      repo,
-		ShiftRepo: shiftRepo,
-		StorageRepo: storageRepo,
+		Repo:                  repo,
+		ShiftRepo:             shiftRepo,
+		AttendanceSettingRepo: attendanceSettingRepo,
+		StorageRepo:           storageRepo,
 	}
 }
 
@@ -50,6 +53,18 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.AttendanceRequest
 		shift, err := u.ShiftRepo.FindById(ctx, *attendance.ShiftScheduleID)
 		if err == nil {
 			attendance.CalculateLateness(shift)
+		}
+	}
+
+	// Calculate Location Status
+	if req.Lat != nil && req.Lng != nil {
+		setting, err := u.AttendanceSettingRepo.Find(ctx)
+		if err == nil {
+			if setting.IsValidDistance(*req.Lat, *req.Lng) {
+				attendance.LocationStatus = domain.LocationStatusInArea
+			} else {
+				attendance.LocationStatus = domain.LocationStatusOutArea
+			}
 		}
 	}
 
