@@ -27,6 +27,7 @@ func SeedAttendanceData(db *gorm.DB) {
 			ShiftScheduleID: uuidPtrSeeder("00000000-0000-0000-0000-000000000901"),
 			LateMinutes:     0,
 			DeductionAmount: 0,
+			LocationStatus:  domain.LocationStatusInArea,
 		},
 		{
 			ID:              uuid.MustParse("00000000-0000-0000-0000-000000001002"),
@@ -36,6 +37,7 @@ func SeedAttendanceData(db *gorm.DB) {
 			ShiftScheduleID: uuidPtrSeeder("00000000-0000-0000-0000-000000000902"),
 			LateMinutes:     20,
 			DeductionAmount: 20000,
+			LocationStatus:  domain.LocationStatusInArea,
 		},
 	}
 	db.Clauses(clause.OnConflict{UpdateAll: true}).Create(&attendances)

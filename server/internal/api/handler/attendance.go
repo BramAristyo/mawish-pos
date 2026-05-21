@@ -36,7 +36,7 @@ func (h *AttendanceHandler) Paginate(c *gin.Context) {
 }
 
 func (h *AttendanceHandler) Store(c *gin.Context) {
-	var req dto.AttendanceRequest
+	var req dto.CreateAttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Error(err)
 		return
@@ -58,7 +58,7 @@ func (h *AttendanceHandler) Update(c *gin.Context) {
 		return
 	}
 
-	var req dto.AttendanceRequest
+	var req dto.UpdateAttendanceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.Error(err)
 		return

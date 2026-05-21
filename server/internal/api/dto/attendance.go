@@ -22,6 +22,7 @@ type AttendanceResponse struct {
 	Notes             *string         `json:"notes"`
 	LateMinutes       int             `json:"lateMinutes"`
 	DeductionAmount   decimal.Decimal `json:"deductionAmount"`
+	LocationStatus    string          `json:"locationStatus"`
 	DeletedAt         *string         `json:"deletedAt,omitempty"`
 	PhotoKey          *string         `json:"photoKey,omitempty"`
 
@@ -34,28 +35,34 @@ type AttendanceResponsePagination struct {
 	Meta filter.Meta          `json:"meta"`
 }
 
-type AttendanceRequest struct {
-	EmployeeID      string  `json:"employeeId" binding:"required,uuid"`
-	Date            string  `json:"date" binding:"required"`
-	CheckIn         *string `json:"checkIn"`
-	CheckOut        *string `json:"checkOut"`
-	ShiftScheduleID *string `json:"shiftScheduleId" binding:"omitempty,uuid"`
-	Notes           *string `json:"notes"`
+type CreateAttendanceRequest struct {
+	EmployeeCode string   `json:"employeeCode" binding:"required"`
+	Pin          string   `json:"pin" binding:"required"`
+	Date         string   `json:"date" binding:"required"`
+	CheckIn      *string  `json:"checkIn"`
+	CheckOut     *string  `json:"checkOut"`
+	Notes        *string  `json:"notes"`
+	Lat          *float64 `json:"lat"`
+	Lng          *float64 `json:"lng"`
+}
+
+type UpdateAttendanceRequest struct {
+	EmployeeCode    *string  `json:"employeeCode"`
+	Pin             *string  `json:"pin"`
+	Date            *string  `json:"date"`
+	CheckIn         *string  `json:"checkIn"`
+	CheckOut        *string  `json:"checkOut"`
+	ShiftScheduleID *string  `json:"shiftScheduleId" binding:"omitempty,uuid"`
+	Notes           *string  `json:"notes"`
+	Lat             *float64 `json:"lat"`
+	Lng             *float64 `json:"lng"`
 }
 
 type ConfirmImageRequest struct {
 	Key string `json:"key" binding:"required"`
 }
 
-func ToAttendanceDomain(req AttendanceRequest) (domain.Attendance, error) {
-	empID, _ := uuid.Parse(req.EmployeeID)
-
-	var shiftID *uuid.UUID
-	if req.ShiftScheduleID != nil {
-		id, _ := uuid.Parse(*req.ShiftScheduleID)
-		shiftID = &id
-	}
-
+func ToAttendanceDomain(req CreateAttendanceRequest) (domain.Attendance, error) {
 	date, err := time.Parse("2006-01-02", req.Date)
 	if err != nil {
 		return domain.Attendance{}, fmt.Errorf("invalid date format: %w", err)
@@ -86,7 +93,55 @@ func ToAttendanceDomain(req AttendanceRequest) (domain.Attendance, error) {
 	}
 
 	return domain.Attendance{
-		EmployeeID:      empID,
+		Date:            date,
+		CheckIn:         checkIn,
+		CheckOut:        checkOut,
+		ShiftScheduleID: nil,
+		Notes:           req.Notes,
+	}, nil
+}
+
+func ToUpdateAttendanceDomain(req UpdateAttendanceRequest) (domain.Attendance, error) {
+	var shiftID *uuid.UUID
+	if req.ShiftScheduleID != nil {
+		id, _ := uuid.Parse(*req.ShiftScheduleID)
+		shiftID = &id
+	}
+
+	var date time.Time
+	if req.Date != nil {
+		d, err := time.Parse("2006-01-02", *req.Date)
+		if err != nil {
+			return domain.Attendance{}, fmt.Errorf("invalid date format: %w", err)
+		}
+		date = d
+	}
+
+	var checkIn *time.Time
+	if req.CheckIn != nil {
+		t, err := time.Parse("2006-01-02 15:04:05", *req.CheckIn)
+		if err != nil {
+			t, err = time.Parse("2006-01-02 15:04", *req.CheckIn)
+			if err != nil {
+				return domain.Attendance{}, fmt.Errorf("invalid checkIn format: %w", err)
+			}
+		}
+		checkIn = &t
+	}
+
+	var checkOut *time.Time
+	if req.CheckOut != nil {
+		t, err := time.Parse("2006-01-02 15:04:05", *req.CheckOut)
+		if err != nil {
+			t, err = time.Parse("2006-01-02 15:04", *req.CheckOut)
+			if err != nil {
+				return domain.Attendance{}, fmt.Errorf("invalid checkOut format: %w", err)
+			}
+		}
+		checkOut = &t
+	}
+
+	return domain.Attendance{
 		Date:            date,
 		CheckIn:         checkIn,
 		CheckOut:        checkOut,
@@ -146,6 +201,7 @@ func ToAttendanceUpdateResponse(a domain.Attendance) AttendanceResponse {
 		Notes:             a.Notes,
 		LateMinutes:       a.LateMinutes,
 		DeductionAmount:   decimal.NewFromFloat(a.DeductionAmount),
+		LocationStatus:    string(a.LocationStatus),
 		DeletedAt:         delAt,
 		PhotoKey:          a.PhotoKey,
 	}

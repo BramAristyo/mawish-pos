@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/BramAristyo/mawish-pos/server/internal/api/dto"
 	"github.com/BramAristyo/mawish-pos/server/internal/domain"
@@ -10,23 +11,30 @@ import (
 	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
 	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AttendanceUseCase struct {
-	Repo        *repository.AttendanceRepository
-	ShiftRepo   *repository.ShiftScheduleRepository
-	StorageRepo domain.StorageRepository
+	Repo                  *repository.AttendanceRepository
+	ShiftRepo             *repository.ShiftScheduleRepository
+	EmployeeRepo          *repository.EmployeeRepository
+	AttendanceSettingRepo *repository.AttendanceSettingRepository
+	StorageRepo           domain.StorageRepository
 }
 
 func NewAttendanceUseCase(
 	repo *repository.AttendanceRepository,
 	shiftRepo *repository.ShiftScheduleRepository,
+	employeeRepo *repository.EmployeeRepository,
+	attendanceSettingRepo *repository.AttendanceSettingRepository,
 	storageRepo domain.StorageRepository,
 ) *AttendanceUseCase {
 	return &AttendanceUseCase{
-		Repo:      repo,
-		ShiftRepo: shiftRepo,
-		StorageRepo: storageRepo,
+		Repo:                  repo,
+		ShiftRepo:             shiftRepo,
+		EmployeeRepo:          employeeRepo,
+		AttendanceSettingRepo: attendanceSettingRepo,
+		StorageRepo:           storageRepo,
 	}
 }
 
@@ -40,16 +48,82 @@ func (u *AttendanceUseCase) Paginate(ctx context.Context, req filter.PaginationW
 	return dto.ToAttendanceResponsePagination(res, req, totalRows), nil
 }
 
-func (u *AttendanceUseCase) Store(ctx context.Context, req dto.AttendanceRequest) (dto.AttendanceResponse, error) {
+func (u *AttendanceUseCase) Store(ctx context.Context, req dto.CreateAttendanceRequest) (dto.AttendanceResponse, error) {
+	// Verify Employee
+	employee, err := u.EmployeeRepo.FindByCode(ctx, req.EmployeeCode)
+	if err != nil {
+		return dto.AttendanceResponse{}, err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(employee.PinHash), []byte(req.Pin))
+	if err != nil {
+		return dto.AttendanceResponse{}, usecase_errors.InvalidPassword
+	}
+
 	attendance, err := dto.ToAttendanceDomain(req)
 	if err != nil {
 		return dto.AttendanceResponse{}, err
 	}
 
-	if attendance.ShiftScheduleID != nil {
-		shift, err := u.ShiftRepo.FindById(ctx, *attendance.ShiftScheduleID)
+	attendance.EmployeeID = employee.ID
+
+	// Detect Shift Schedule
+	if attendance.CheckIn != nil {
+		schedules, err := u.ShiftRepo.GetAll(ctx)
 		if err == nil {
-			attendance.CalculateLateness(shift)
+			var activeShift *domain.ShiftSchedule
+			checkInTime := attendance.CheckIn.Format("15:04:05")
+
+			for _, s := range schedules {
+				// Simple check: if check-in is between StartTime - 2h and EndTime + 1h
+				// We need to parse StartTime and EndTime into comparable formats
+				start, _ := time.Parse("15:04:05", s.StartTime)
+				if s.StartTime == "" || len(s.StartTime) < 5 { // Fallback for 15:04
+					start, _ = time.Parse("15:04", s.StartTime)
+				}
+
+				end, _ := time.Parse("15:04:05", s.EndTime)
+				if s.EndTime == "" || len(s.EndTime) < 5 {
+					end, _ = time.Parse("15:04", s.EndTime)
+				}
+
+				nowTime, _ := time.Parse("15:04:05", checkInTime)
+
+				// Buffer for check-in: 2 hours before start
+				bufferStart := start.Add(-2 * time.Hour)
+				// Buffer for check-out: 2 hours after end (or just use EndTime)
+				bufferEnd := end.Add(2 * time.Hour)
+
+				// Handle shifts crossing midnight
+				if end.Before(start) {
+					if nowTime.After(bufferStart) || nowTime.Before(bufferEnd) {
+						activeShift = &s
+						break
+					}
+				} else {
+					if nowTime.After(bufferStart) && nowTime.Before(bufferEnd) {
+						activeShift = &s
+						break
+					}
+				}
+			}
+
+			if activeShift != nil {
+				attendance.ShiftScheduleID = &activeShift.ID
+				attendance.CalculateLateness(*activeShift)
+			}
+		}
+	}
+
+	// Calculate Location Status
+	if req.Lat != nil && req.Lng != nil {
+		setting, err := u.AttendanceSettingRepo.Find(ctx)
+		if err == nil {
+			if setting.IsValidDistance(*req.Lat, *req.Lng) {
+				attendance.LocationStatus = domain.LocationStatusInArea
+			} else {
+				attendance.LocationStatus = domain.LocationStatusOutArea
+			}
 		}
 	}
 
@@ -59,7 +133,7 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.AttendanceRequest
 	}
 
 	key := fmt.Sprintf("attendance/%s/%s/%s.jpg",
-		req.EmployeeID,
+		employee.ID,
 		req.Date,
 		uuid.New().String(),
 	)
@@ -67,7 +141,6 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.AttendanceRequest
 	if err != nil {
 		return dto.AttendanceResponse{}, err
 	}
-	fmt.Println("URL ", uploadUrl)
 
 	return dto.ToCreateAttedanceResponse(res, uploadUrl), nil
 }
@@ -111,8 +184,8 @@ func (u *AttendanceUseCase) ConfirmAttendanceImage(ctx context.Context, id uuid.
 	return dto.ToAttendanceUpdateResponse(res), nil
 }
 
-func (u *AttendanceUseCase) Update(ctx context.Context, id uuid.UUID, req dto.AttendanceRequest) (dto.AttendanceResponse, error) {
-	attendance, err := dto.ToAttendanceDomain(req)
+func (u *AttendanceUseCase) Update(ctx context.Context, id uuid.UUID, req dto.UpdateAttendanceRequest) (dto.AttendanceResponse, error) {
+	attendance, err := dto.ToUpdateAttendanceDomain(req)
 	if err != nil {
 		return dto.AttendanceResponse{}, err
 	}
@@ -121,6 +194,18 @@ func (u *AttendanceUseCase) Update(ctx context.Context, id uuid.UUID, req dto.At
 		shift, err := u.ShiftRepo.FindById(ctx, *attendance.ShiftScheduleID)
 		if err == nil {
 			attendance.CalculateLateness(shift)
+		}
+	}
+
+	// Calculate Location Status
+	if req.Lat != nil && req.Lng != nil {
+		setting, err := u.AttendanceSettingRepo.Find(ctx)
+		if err == nil {
+			if setting.IsValidDistance(*req.Lat, *req.Lng) {
+				attendance.LocationStatus = domain.LocationStatusInArea
+			} else {
+				attendance.LocationStatus = domain.LocationStatusOutArea
+			}
 		}
 	}
 

@@ -6,17 +6,18 @@ info:
 http:
   method: POST
   url: "{{url}}/attendances"
-  auth: inherit
   body:
     type: json
     data: |-
       {
-        "employeeId": "00000000-0000-0000-0000-000000000801",
-        "date": "2024-05-21",
-        "checkIn": "2024-05-21 07:05:00",
-        "shiftScheduleId": "00000000-0000-0000-0000-000000000901",
-        "notes": "Arrived slightly late due to traffic"
+        "employeeCode": "EMP-001",
+        "pin": "1234",
+        "date": "2026-05-21",
+        "checkIn": "2026-05-21 08:05:00",
+        "lat": -6.2,
+        "lng": 106.8
       }
+  auth: inherit
 
 settings:
   encodeUrl: true
@@ -61,5 +62,50 @@ examples:
               "lateMinutes": 5,
               "deductionAmount": "5000",
               "uploadUrl": "https://example-storage.com/upload/attendance/00000000-0000-0000-0000-000000000801/2024-05-21/uuid.jpg"
+            }
+          }
+  - name: exampleSuccess
+    request:
+      url: "{{url}}/attendances"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "employeeId": "00000000-0000-0000-0000-000000000801",
+            "date": "2024-05-21",
+            "checkIn": "2024-05-21 07:05:00",
+            "shiftScheduleId": "00000000-0000-0000-0000-000000000901",
+            "notes": "Arrived slightly late due to traffic"
+          }
+    response:
+      status: 201
+      statusText: Created
+      headers:
+        - name: content-type
+          value: application/json; charset=utf-8
+        - name: date
+          value: Thu, 21 May 2026 05:31:20 GMT
+        - name: content-length
+          value: "838"
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "success create attendance",
+            "data": {
+              "id": "8af95def-5ea2-4966-a530-094ee870c397",
+              "employeeCode": "",
+              "employeeName": "",
+              "date": "2024-05-21",
+              "checkIn": "07:05",
+              "checkOut": null,
+              "totalWorkMinutes": null,
+              "shiftScheduleName": "",
+              "notes": "Arrived slightly late due to traffic",
+              "lateMinutes": 0,
+              "deductionAmount": "0",
+              "uploadUrl": "https://mawish-pos.a131452741297cc5ce88ae1c1652fc2f.r2.cloudflarestorage.com/attendance/00000000-0000-0000-0000-000000000801/2024-05-21/9c1e8bb2-2d71-418f-829b-2daa5d8aad51.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=545d1b29d67da21b7275859ff08671c6%2F20260521%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20260521T053120Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&x-id=PutObject&X-Amz-Signature=62f1f605b535883a24b696bee9974b6fa787320e89759602d4b448bb66a21401"
             }
           }

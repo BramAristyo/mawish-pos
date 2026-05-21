@@ -75,6 +75,17 @@ func (r *EmployeeRepository) FindById(ctx context.Context, id uuid.UUID) (domain
 	return employee, nil
 }
 
+func (r *EmployeeRepository) FindByCode(ctx context.Context, code string) (domain.Employee, error) {
+	var employee domain.Employee
+	if err := r.DB.WithContext(ctx).Where("code = ?", code).First(&employee).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return domain.Employee{}, usecase_errors.NotFound
+		}
+		return domain.Employee{}, err
+	}
+	return employee, nil
+}
+
 func (r *EmployeeRepository) Store(ctx context.Context, employee *domain.Employee) (domain.Employee, error) {
 	if err := r.DB.WithContext(ctx).Create(employee).Error; err != nil {
 		return domain.Employee{}, err
