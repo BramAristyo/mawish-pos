@@ -6,6 +6,7 @@ import (
 	"github.com/BramAristyo/mawish-pos/server/internal/domain"
 	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/persistence/database"
 	"github.com/BramAristyo/mawish-pos/server/pkg/filter"
+	"github.com/BramAristyo/mawish-pos/server/pkg/usecase_errors"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -60,9 +61,42 @@ func (r *AttendanceRepository) GetByEmployeeID(ctx context.Context, employeeId u
 	return attendance, nil
 }
 
+func (r *AttendanceRepository) FindById(ctx context.Context, id uuid.UUID) (domain.Attendance, error) {
+	var attendance domain.Attendance
+	if err := r.DB.WithContext(ctx).
+		Preload("Employee").
+		Preload("ShiftSchedule").
+		First(&attendance, "id = ?", id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return domain.Attendance{}, usecase_errors.NotFound
+		}
+		return domain.Attendance{}, err
+	}
+	return attendance, nil
+}
+
 func (r *AttendanceRepository) Store(ctx context.Context, a *domain.Attendance) (domain.Attendance, error) {
 	if err := r.DB.WithContext(ctx).Create(a).Error; err != nil {
 		return domain.Attendance{}, err
 	}
 	return *a, nil
+}
+
+func (r *AttendanceRepository) Update(ctx context.Context, id uuid.UUID, a *domain.Attendance) (domain.Attendance, error) {
+	var existing domain.Attendance
+	if err := r.DB.WithContext(ctx).Where("id = ?", id).First(&existing).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return domain.Attendance{}, usecase_errors.NotFound
+		}
+
+		return domain.Attendance{}, err
+	}
+
+	updateData := map[string]any { "photo_key": a.PhotoKey }
+
+	if err := r.DB.WithContext(ctx).Model(&existing).Updates(updateData).Error; err != nil {
+		return domain.Attendance{}, err
+	}
+
+	return existing, nil
 }

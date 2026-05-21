@@ -16,19 +16,11 @@ go.work
 *.log
 *.log.gz
 
-# Air (live reload)
-# .air.toml
-.air/
-
-# Jupyter Notebooks
-*.ipynb
-
 # Temp and uploads
 tmp/
 uploads/
 */cmd/uploads
 
 .env
-TODO.MD
 
-dist/
+static/dist

@@ -4,8 +4,10 @@ import (
 	"github.com/BramAristyo/mawish-pos/server/internal/api/handler"
 	"github.com/BramAristyo/mawish-pos/server/internal/api/validation"
 	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/config"
+	"github.com/BramAristyo/mawish-pos/server/internal/infrastructure/storage"
 	"github.com/BramAristyo/mawish-pos/server/internal/repository"
 	"github.com/BramAristyo/mawish-pos/server/internal/usecase"
+	"github.com/BramAristyo/mawish-pos/server/pkg/logger"
 	"gorm.io/gorm"
 )
 
@@ -33,8 +35,10 @@ type Handlers struct {
 	Ledger          *handler.LedgerHandler
 }
 
-func Bootstrap(db *gorm.DB, cfg *config.Config) *Handlers {
+func Bootstrap(db *gorm.DB, cfg *config.Config, zapLogger *logger.ZapLogger) *Handlers {
 	validation.RegisterCustomValidators()
+
+	storageRepo := storage.NewR2Storage(cfg, zapLogger)
 
 	userRepository := repository.NewUserRepository(db)
 	auditLogRepository := repository.NewAuditLogRepository(db)
@@ -84,7 +88,7 @@ func Bootstrap(db *gorm.DB, cfg *config.Config) *Handlers {
 	attendanceRepository := repository.NewAttendanceRepository(db)
 	attendanceSettingRepository := repository.NewAttendanceSettingRepository(db)
 	shiftScheduleRepository := repository.NewShiftScheduleRepository(db)
-	attendanceUseCase := usecase.NewAttendanceUseCase(attendanceRepository, shiftScheduleRepository)
+	attendanceUseCase := usecase.NewAttendanceUseCase(attendanceRepository, shiftScheduleRepository, storageRepo)
 	attendanceSettingUseCase := usecase.NewAttendanceSettingUseCase(attendanceSettingRepository)
 
 	shiftScheduleUseCase := usecase.NewShiftScheduleUseCase(shiftScheduleRepository)

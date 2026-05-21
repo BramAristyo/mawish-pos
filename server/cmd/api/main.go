@@ -48,7 +48,7 @@ func main() {
 
 	r.Use(middleware.ErrorHandler(zapLogger))
 
-	handlers := dependency.Bootstrap(db, cfg)
+	handlers := dependency.Bootstrap(db, cfg, zapLogger)
 
 	r.GET("/healthz", func(c *gin.Context) {
 		if !isReady.Load() {

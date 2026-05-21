@@ -18,10 +18,15 @@ type AttendanceUseCase struct {
 	StorageRepo domain.StorageRepository
 }
 
-func NewAttendanceUseCase(repo *repository.AttendanceRepository, shiftRepo *repository.ShiftScheduleRepository) *AttendanceUseCase {
+func NewAttendanceUseCase(
+	repo *repository.AttendanceRepository,
+	shiftRepo *repository.ShiftScheduleRepository,
+	storageRepo domain.StorageRepository,
+) *AttendanceUseCase {
 	return &AttendanceUseCase{
 		Repo:      repo,
 		ShiftRepo: shiftRepo,
+		StorageRepo: storageRepo,
 	}
 }
 
@@ -63,6 +68,25 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.AttendanceRequest
 	return dto.ToCreateAttedanceResponse(res, uploadUrl), nil
 }
 
+func (u *AttendanceUseCase) FindById(ctx context.Context, id uuid.UUID) (dto.AttendanceResponse, error) {
+	attendance, err := u.Repo.FindById(ctx, id)
+	if err != nil {
+		return dto.AttendanceResponse{}, err
+	}
+
+	res := dto.ToAttendanceUpdateResponse(attendance)
+
+	if attendance.PhotoKey != nil {
+		getUrl, err := u.StorageRepo.GenerateGetURL(ctx, *attendance.PhotoKey)
+		if err != nil {
+			return dto.AttendanceResponse{}, err
+		}
+		res.PhotoURL = getUrl
+	}
+
+	return res, nil
+}
+
 func (u *AttendanceUseCase) ConfirmAttendanceImage(ctx context.Context, id uuid.UUID, key string) (dto.AttendanceResponse, error) {
 	isSuccess, err := u.StorageRepo.VerifyObject(ctx, key)
 	if err != nil {
@@ -73,5 +97,12 @@ func (u *AttendanceUseCase) ConfirmAttendanceImage(ctx context.Context, id uuid.
 		return dto.AttendanceResponse{}, usecase_errors.PhotoVerifyError
 	}
 
-	attendance, err := u.Repo.
+	res, err := u.Repo.Update(ctx, id, &domain.Attendance{
+		PhotoKey: &key,
+	})
+	if err != nil {
+		return dto.AttendanceResponse{}, err
+	}
+
+	return dto.ToAttendanceUpdateResponse(res), nil
 }
