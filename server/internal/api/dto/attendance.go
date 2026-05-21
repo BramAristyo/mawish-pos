@@ -22,7 +22,6 @@ type AttendanceResponse struct {
 	Notes             *string         `json:"notes"`
 	LateMinutes       int             `json:"lateMinutes"`
 	DeductionAmount   decimal.Decimal `json:"deductionAmount"`
-	LocationStatus    string          `json:"locationStatus"`
 	DeletedAt         *string         `json:"deletedAt,omitempty"`
 	PhotoKey          *string         `json:"photoKey,omitempty"`
 
@@ -36,14 +35,12 @@ type AttendanceResponsePagination struct {
 }
 
 type AttendanceRequest struct {
-	EmployeeID      string   `json:"employeeId" binding:"required,uuid"`
-	Date            string   `json:"date" binding:"required"`
-	CheckIn         *string  `json:"checkIn"`
-	CheckOut        *string  `json:"checkOut"`
-	ShiftScheduleID *string  `json:"shiftScheduleId" binding:"omitempty,uuid"`
-	Notes           *string  `json:"notes"`
-	Lat             *float64 `json:"lat"`
-	Lng             *float64 `json:"lng"`
+	EmployeeID      string  `json:"employeeId" binding:"required,uuid"`
+	Date            string  `json:"date" binding:"required"`
+	CheckIn         *string `json:"checkIn"`
+	CheckOut        *string `json:"checkOut"`
+	ShiftScheduleID *string `json:"shiftScheduleId" binding:"omitempty,uuid"`
+	Notes           *string `json:"notes"`
 }
 
 func ToAttendanceDomain(req AttendanceRequest) (domain.Attendance, error) {
@@ -145,7 +142,6 @@ func ToAttendanceUpdateResponse(a domain.Attendance) AttendanceResponse {
 		Notes:             a.Notes,
 		LateMinutes:       a.LateMinutes,
 		DeductionAmount:   decimal.NewFromFloat(a.DeductionAmount),
-		LocationStatus:    string(a.LocationStatus),
 		DeletedAt:         delAt,
 		PhotoKey:          a.PhotoKey,
 	}

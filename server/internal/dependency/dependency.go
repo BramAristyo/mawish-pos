@@ -88,7 +88,7 @@ func Bootstrap(db *gorm.DB, cfg *config.Config, zapLogger *logger.ZapLogger) *Ha
 	attendanceRepository := repository.NewAttendanceRepository(db)
 	attendanceSettingRepository := repository.NewAttendanceSettingRepository(db)
 	shiftScheduleRepository := repository.NewShiftScheduleRepository(db)
-	attendanceUseCase := usecase.NewAttendanceUseCase(attendanceRepository, shiftScheduleRepository, attendanceSettingRepository, storageRepo)
+	attendanceUseCase := usecase.NewAttendanceUseCase(attendanceRepository, shiftScheduleRepository, storageRepo)
 	attendanceSettingUseCase := usecase.NewAttendanceSettingUseCase(attendanceSettingRepository)
 
 	shiftScheduleUseCase := usecase.NewShiftScheduleUseCase(shiftScheduleRepository)
