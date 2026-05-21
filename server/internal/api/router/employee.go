@@ -17,7 +17,10 @@ func EmployeeRoutes(r *gin.RouterGroup, h *handler.EmployeeHandler) {
 
 func AttendanceRoutes(r *gin.RouterGroup, h *handler.AttendanceHandler) {
 	r.GET("", h.Paginate)
+	r.GET("/:id", h.FindById)
 	r.POST("", h.Store)
+	r.PUT("/:id", h.Update)
+	r.PUT("/:id/confirm-image", h.ConfirmImage)
 }
 
 func AttendanceSettingRoutes(r *gin.RouterGroup, h *handler.AttendanceSettingHandler) {

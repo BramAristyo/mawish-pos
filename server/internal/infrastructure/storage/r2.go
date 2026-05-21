@@ -38,6 +38,8 @@ func NewR2Storage(appCfg *appconfig.Config, zapLogger *logger.ZapLogger) domain.
 
 	presignClient := s3.NewPresignClient(client)
 
+	fmt.Println("Cfg", appCfg.R2)
+
 	return &R2Storage{
 		client:     client,
 		presign:    presignClient,

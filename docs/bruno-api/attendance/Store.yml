@@ -23,3 +23,43 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+examples:
+  - name: success create attendance
+    request:
+      url: "{{url}}/attendances"
+      method: POST
+      body:
+        type: json
+        data: |-
+          {
+            "employeeId": "00000000-0000-0000-0000-000000000801",
+            "date": "2024-05-21",
+            "checkIn": "2024-05-21 07:05:00",
+            "shiftScheduleId": "00000000-0000-0000-0000-000000000901",
+            "notes": "Arrived slightly late due to traffic"
+          }
+    response:
+      status: 201
+      statusText: Created
+      body:
+        type: json
+        data: |-
+          {
+            "success": true,
+            "message": "success create attendance",
+            "data": {
+              "id": "11111111-1111-1111-1111-111111111111",
+              "employeeCode": "EMP001",
+              "employeeName": "John Doe",
+              "date": "2024-05-21",
+              "checkIn": "07:05",
+              "checkOut": null,
+              "totalWorkMinutes": null,
+              "shiftScheduleName": "Morning Shift",
+              "notes": "Arrived slightly late due to traffic",
+              "lateMinutes": 5,
+              "deductionAmount": "5000",
+              "uploadUrl": "https://example-storage.com/upload/attendance/00000000-0000-0000-0000-000000000801/2024-05-21/uuid.jpg"
+            }
+          }

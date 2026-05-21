@@ -43,6 +43,10 @@ type AttendanceRequest struct {
 	Notes           *string `json:"notes"`
 }
 
+type ConfirmImageRequest struct {
+	Key string `json:"key" binding:"required"`
+}
+
 func ToAttendanceDomain(req AttendanceRequest) (domain.Attendance, error) {
 	empID, _ := uuid.Parse(req.EmployeeID)
 

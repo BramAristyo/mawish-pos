@@ -1,0 +1,25 @@
+info:
+  name: Confirm Image
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{url}}/attendances/{{attendance_id}}/confirm-image"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "key": "attendance/00000000-0000-0000-0000-000000000801/2024-05-21/uuid.jpg"
+      }
+
+vars:
+  pre-request:
+    attendance_id: 00000000-0000-0000-0000-000000001801
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

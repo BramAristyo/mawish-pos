@@ -1,0 +1,31 @@
+info:
+  name: Update
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{url}}/attendances/{{attendance_id}}"
+  auth: inherit
+  body:
+    type: json
+    data: |-
+      {
+        "employeeId": "00000000-0000-0000-0000-000000000801",
+        "date": "2024-05-21",
+        "checkIn": "2024-05-21 07:05:00",
+        "checkOut": "2024-05-21 17:00:00",
+        "shiftScheduleId": "00000000-0000-0000-0000-000000000901",
+        "notes": "Finished work on time"
+      }
+
+vars:
+  pre-request:
+    attendance_id: 00000000-0000-0000-0000-000000001801
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+

@@ -84,7 +84,11 @@ func (r *AttendanceRepository) Store(ctx context.Context, a *domain.Attendance) 
 
 func (r *AttendanceRepository) Update(ctx context.Context, id uuid.UUID, a *domain.Attendance) (domain.Attendance, error) {
 	var existing domain.Attendance
-	if err := r.DB.WithContext(ctx).Where("id = ?", id).First(&existing).Error; err != nil {
+	if err := r.DB.WithContext(ctx).
+		Preload("Employee").
+		Preload("ShiftSchedule").
+		Where("id = ?", id).
+		First(&existing).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return domain.Attendance{}, usecase_errors.NotFound
 		}
@@ -92,9 +96,7 @@ func (r *AttendanceRepository) Update(ctx context.Context, id uuid.UUID, a *doma
 		return domain.Attendance{}, err
 	}
 
-	updateData := map[string]any { "photo_key": a.PhotoKey }
-
-	if err := r.DB.WithContext(ctx).Model(&existing).Updates(updateData).Error; err != nil {
+	if err := r.DB.WithContext(ctx).Model(&existing).Updates(a).Error; err != nil {
 		return domain.Attendance{}, err
 	}
 

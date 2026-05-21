@@ -64,6 +64,10 @@ func (u *AttendanceUseCase) Store(ctx context.Context, req dto.AttendanceRequest
 		uuid.New().String(),
 	)
 	uploadUrl, err := u.StorageRepo.GenerateUploadURL(ctx, key)
+	if err != nil {
+		return dto.AttendanceResponse{}, err
+	}
+	fmt.Println("URL ", uploadUrl)
 
 	return dto.ToCreateAttedanceResponse(res, uploadUrl), nil
 }
@@ -100,6 +104,27 @@ func (u *AttendanceUseCase) ConfirmAttendanceImage(ctx context.Context, id uuid.
 	res, err := u.Repo.Update(ctx, id, &domain.Attendance{
 		PhotoKey: &key,
 	})
+	if err != nil {
+		return dto.AttendanceResponse{}, err
+	}
+
+	return dto.ToAttendanceUpdateResponse(res), nil
+}
+
+func (u *AttendanceUseCase) Update(ctx context.Context, id uuid.UUID, req dto.AttendanceRequest) (dto.AttendanceResponse, error) {
+	attendance, err := dto.ToAttendanceDomain(req)
+	if err != nil {
+		return dto.AttendanceResponse{}, err
+	}
+
+	if attendance.ShiftScheduleID != nil {
+		shift, err := u.ShiftRepo.FindById(ctx, *attendance.ShiftScheduleID)
+		if err == nil {
+			attendance.CalculateLateness(shift)
+		}
+	}
+
+	res, err := u.Repo.Update(ctx, id, &attendance)
 	if err != nil {
 		return dto.AttendanceResponse{}, err
 	}
